@@ -146,6 +146,11 @@ The most common workflow is:
 5. `gstack-qa`
 6. `gstack-ship`
 
+First real commands inside a repo usually look like:
+- `Use gstack-review and review the current branch.`
+- `Use gstack-autoplan and create the implementation plan first.`
+- `Use gstack-qa and test https://staging.example.com.`
+
 For the complete command catalog, grouped use cases, and a fuller explanation, see [Codex Quickstart](docs/CODEX-QUICKSTART.md) and [中文快速开始](docs/CODEX-QUICKSTART.zh-CN.md).
 
 Install to one repo:

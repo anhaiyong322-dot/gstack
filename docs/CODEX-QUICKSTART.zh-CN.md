@@ -321,3 +321,64 @@ OpenAI 模型大脑 + Codex 运行时 + gstack 工作流包
 - `.gstack/codex/prompts/autoplan.md`
 
 当你不想每次重新解释 review、QA、发版或规划流程时，直接引用这些文件，就能让 Codex 按这个仓库的默认工作流来执行。
+
+### 11. 第一次进入 `E:\your-project` 后怎么开始
+
+完成 bootstrap 之后，最短路径就是：
+
+```powershell
+Set-Location E:\your-project
+codex
+```
+
+进入 Codex 之后，第一句尽量只下一个明确指令，不要一上来塞 5 个目标。
+
+如果你是做一个新功能，可以直接这样说：
+
+```text
+Use gstack-office-hours and help me sharpen this feature idea before we implement it.
+```
+
+或者：
+
+```text
+Use gstack-autoplan and create the implementation plan first.
+```
+
+如果你是想审查当前分支，可以直接说：
+
+```text
+Use gstack-review and review the current branch.
+```
+
+如果你是想对 staging 做浏览器 QA，可以直接说：
+
+```text
+Use gstack-qa and test https://staging.example.com.
+```
+
+如果你遇到的是一个应该先查根因的 bug，可以直接说：
+
+```text
+Use gstack-investigate and find the root cause before making changes.
+```
+
+如果你更想直接引用项目里的 prompt 文件，可以这样说：
+
+```text
+Use .gstack/codex/prompts/review.md and review the current branch.
+```
+
+```text
+Use .gstack/codex/prompts/qa.md and test https://staging.example.com.
+```
+
+```text
+Use .gstack/codex/prompts/ship.md and prepare this branch to ship.
+```
+
+对大多数项目来说，第一次真正开始用时，建议这样选：
+
+1. 如果仓库里已经有代码，想最快看到有效信号，就先用 `gstack-review`
+2. 如果任务本身还不清楚，就先用 `gstack-office-hours`
+3. 如果主要风险在浏览器行为，就先用 `gstack-qa`

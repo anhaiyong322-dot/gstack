@@ -321,3 +321,62 @@ Every bootstrapped repo also gets these prompt files:
 - `.gstack/codex/prompts/autoplan.md`
 
 Use them when you want Codex to follow the repo's default framing for review, QA, shipping, or planning without re-explaining the workflow each time.
+
+### 11. First Session in `E:\your-project`
+
+After bootstrap, the shortest path is:
+
+```powershell
+Set-Location E:\your-project
+codex
+```
+
+Then start with one concrete instruction, not five at once.
+
+For a new feature, use one of these:
+
+```text
+Use gstack-office-hours and help me sharpen this feature idea before we implement it.
+```
+
+```text
+Use gstack-autoplan and create the implementation plan first.
+```
+
+For a code review on your current branch:
+
+```text
+Use gstack-review and review the current branch.
+```
+
+For browser QA against a staging URL:
+
+```text
+Use gstack-qa and test https://staging.example.com.
+```
+
+For a bug that should be investigated before fixing:
+
+```text
+Use gstack-investigate and find the root cause before making changes.
+```
+
+If you prefer the repo-local prompt files, use:
+
+```text
+Use .gstack/codex/prompts/review.md and review the current branch.
+```
+
+```text
+Use .gstack/codex/prompts/qa.md and test https://staging.example.com.
+```
+
+```text
+Use .gstack/codex/prompts/ship.md and prepare this branch to ship.
+```
+
+The recommended first real session for most repos is:
+
+1. start with `gstack-review` if code already exists and you want signal fast
+2. start with `gstack-office-hours` if the task is still ambiguous
+3. start with `gstack-qa` if the main risk is browser behavior
