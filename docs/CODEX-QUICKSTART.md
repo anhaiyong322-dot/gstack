@@ -380,3 +380,76 @@ The recommended first real session for most repos is:
 1. start with `gstack-review` if code already exists and you want signal fast
 2. start with `gstack-office-hours` if the task is still ambiguous
 3. start with `gstack-qa` if the main risk is browser behavior
+
+### 12. Example End-to-End Session: `review -> qa -> ship`
+
+This is the simplest realistic path once a branch already has code on it.
+
+Start in the repo:
+
+```powershell
+Set-Location E:\your-project
+codex
+```
+
+Then run the sequence below.
+
+Step 1: review the branch
+
+```text
+Use gstack-review and review the current branch.
+```
+
+Expected result:
+
+- Codex inspects the current branch as a pre-merge review
+- it calls out bugs, regressions, missing tests, or risky assumptions
+- you either fix the issues immediately or ask Codex to fix them before continuing
+
+Step 2: run browser QA
+
+```text
+Use gstack-qa and test https://staging.example.com.
+```
+
+Expected result:
+
+- Codex opens the real QA workflow for the target URL
+- it exercises the browser path, checks visible behavior, and reports breakage
+- if the workflow is allowed to fix issues, it can move from finding problems into repair and re-verification
+
+If you only want findings and not code changes, use:
+
+```text
+Use gstack-qa-only and test https://staging.example.com.
+```
+
+Step 3: prepare to ship
+
+```text
+Use gstack-ship and prepare this branch to ship.
+```
+
+Expected result:
+
+- Codex verifies release readiness for the branch
+- it checks tests, release prep, and PR readiness
+- it leaves you at the point where shipping is organized instead of ad hoc
+
+The shortest conversational form is:
+
+```text
+Use gstack-review and review the current branch.
+Use gstack-qa and test https://staging.example.com.
+Use gstack-ship and prepare this branch to ship.
+```
+
+The better form in practice is still one step at a time:
+
+1. finish `gstack-review`
+2. resolve review findings
+3. run `gstack-qa`
+4. resolve QA findings
+5. run `gstack-ship`
+
+That sequencing gives you the cleanest signal and the least confusion.

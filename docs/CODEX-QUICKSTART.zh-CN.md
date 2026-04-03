@@ -382,3 +382,76 @@ Use .gstack/codex/prompts/ship.md and prepare this branch to ship.
 1. 如果仓库里已经有代码，想最快看到有效信号，就先用 `gstack-review`
 2. 如果任务本身还不清楚，就先用 `gstack-office-hours`
 3. 如果主要风险在浏览器行为，就先用 `gstack-qa`
+
+### 12. 一套完整链路示例：`review -> qa -> ship`
+
+当一个分支上已经有代码时，最简单也最真实的完整链路通常就是这一套。
+
+先进入项目：
+
+```powershell
+Set-Location E:\your-project
+codex
+```
+
+然后按下面顺序来。
+
+第 1 步：先审查当前分支
+
+```text
+Use gstack-review and review the current branch.
+```
+
+预期结果：
+
+- Codex 会把当前分支当成合并前审查对象
+- 它会指出 bug、回归风险、测试缺口或危险假设
+- 你可以先修这些问题，再继续后面的 QA 和发版准备
+
+第 2 步：再做浏览器 QA
+
+```text
+Use gstack-qa and test https://staging.example.com.
+```
+
+预期结果：
+
+- Codex 会对目标 URL 跑真实的浏览器 QA 流程
+- 它会检查页面行为、关键流程、可见异常
+- 如果这个流程允许修复，它可以从发现问题继续走到修复和复验
+
+如果你只想拿到问题列表，不希望它改代码，可以改成：
+
+```text
+Use gstack-qa-only and test https://staging.example.com.
+```
+
+第 3 步：最后准备发版
+
+```text
+Use gstack-ship and prepare this branch to ship.
+```
+
+预期结果：
+
+- Codex 会检查这个分支是否具备发版准备条件
+- 它会整理测试、发布准备、PR readiness
+- 最终把发版这件事从临时操作，变成有组织的流程
+
+最短的连续写法是：
+
+```text
+Use gstack-review and review the current branch.
+Use gstack-qa and test https://staging.example.com.
+Use gstack-ship and prepare this branch to ship.
+```
+
+但在真实使用中，更推荐还是一步一步来：
+
+1. 先完成 `gstack-review`
+2. 处理 review 发现的问题
+3. 再跑 `gstack-qa`
+4. 处理 QA 发现的问题
+5. 最后跑 `gstack-ship`
+
+这样得到的信号最清楚，也最不容易混乱。

@@ -151,7 +151,9 @@ First real commands inside a repo usually look like:
 - `Use gstack-autoplan and create the implementation plan first.`
 - `Use gstack-qa and test https://staging.example.com.`
 
-For the complete command catalog, grouped use cases, and a fuller explanation, see [Codex Quickstart](docs/CODEX-QUICKSTART.md) and [中文快速开始](docs/CODEX-QUICKSTART.zh-CN.md).
+The quickstart docs also include a full `review -> qa -> ship` example session.
+
+For the complete command catalog, grouped use cases, example sessions, and a fuller explanation, see [Codex Quickstart](docs/CODEX-QUICKSTART.md) and [中文快速开始](docs/CODEX-QUICKSTART.zh-CN.md).
 
 Install to one repo:
 
