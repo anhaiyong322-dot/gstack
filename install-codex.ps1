@@ -33,9 +33,20 @@ function Get-ToolPath {
   }
 }
 
+function Test-IsWindowsSystemBash {
+  param([string]$Path)
+  if (-not $Path) {
+    return $false
+  }
+
+  $normalized = [IO.Path]::GetFullPath($Path)
+  $systemRoot = [IO.Path]::GetFullPath((Join-Path $env:WINDIR 'System32\bash.exe'))
+  return $normalized.Equals($systemRoot, [System.StringComparison]::OrdinalIgnoreCase)
+}
+
 function Find-GitBash {
   $fromPath = Get-ToolPath 'bash'
-  if ($fromPath) {
+  if ($fromPath -and -not (Test-IsWindowsSystemBash $fromPath)) {
     return $fromPath
   }
 
@@ -52,6 +63,26 @@ function Find-GitBash {
       (Join-Path ${env:ProgramFiles(x86)} 'Git\usr\bin\bash.exe')
     )
   }
+
+  foreach ($candidate in $candidates) {
+    if ($candidate -and (Test-Path $candidate)) {
+      return $candidate
+    }
+  }
+
+  return $null
+}
+
+function Find-Bun {
+  $fromPath = Get-ToolPath 'bun'
+  if ($fromPath) {
+    return $fromPath
+  }
+
+  $candidates = @(
+    (Join-Path $HOME '.bun\bin\bun.exe'),
+    (Join-Path $HOME '.bun\bin\bun')
+  )
 
   foreach ($candidate in $candidates) {
     if ($candidate -and (Test-Path $candidate)) {
@@ -125,11 +156,25 @@ function Update-Or-CloneRepo {
 function Invoke-Setup {
   param(
     [string]$BashExe,
-    [string]$RepoDir
+    [string]$RepoDir,
+    [string]$BunExe,
+    [string]$NodeExe
   )
 
   $bashRepoDir = Convert-ToBashPath ((Resolve-Path $RepoDir).Path)
-  $bashCommand = "cd `"$bashRepoDir`" && ./setup --host codex"
+  $pathPrefixes = @()
+  if ($BunExe) {
+    $pathPrefixes += (Convert-ToBashPath (Split-Path -Parent $BunExe))
+  }
+  if ($NodeExe) {
+    $pathPrefixes += (Convert-ToBashPath (Split-Path -Parent $NodeExe))
+  }
+  $pathExport = ''
+  if ($pathPrefixes.Count -gt 0) {
+    $joinedPaths = ($pathPrefixes | Select-Object -Unique) -join ':'
+    $pathExport = "export PATH=`"$joinedPaths`":`$PATH && "
+  }
+  $bashCommand = "cd `"$bashRepoDir`" && ${pathExport}./setup --host codex"
 
   Write-Step 'Running ./setup --host codex'
   & $BashExe -lc $bashCommand
@@ -139,7 +184,7 @@ function Invoke-Setup {
 }
 
 $bashExe = Find-GitBash
-$bunExe = Get-ToolPath 'bun'
+$bunExe = Find-Bun
 $nodeExe = Get-ToolPath 'node'
 $codexExe = Get-ToolPath 'codex'
 
@@ -150,10 +195,10 @@ Write-Info ("node : {0}" -f ($(if ($nodeExe) { $nodeExe } else { 'missing' })))
 Write-Info ("codex: {0}" -f ($(if ($codexExe) { $codexExe } else { 'missing (installer can continue)' })))
 
 if (-not $bashExe) {
-  throw 'bash is required. Install Git for Windows or WSL, then re-run install-codex.ps1.'
+  throw 'Git Bash is required. Install Git for Windows, then re-run install-codex.ps1.'
 }
 if (-not $bunExe) {
-  throw 'bun is required. Install Bun v1.x, then re-run install-codex.ps1.'
+  throw 'bun is required. Install Bun first with: powershell -c "irm bun.sh/install.ps1|iex" . Then re-run install-codex.ps1.'
 }
 if (-not $nodeExe) {
   throw 'node is required on Windows because Playwright falls back to Node.js. Install Node.js, then re-run install-codex.ps1.'
@@ -176,7 +221,7 @@ if ($RepoLocal) {
 }
 
 if (-not $SkipSetup) {
-  Invoke-Setup -BashExe $bashExe -RepoDir $repoDir
+  Invoke-Setup -BashExe $bashExe -RepoDir $repoDir -BunExe $bunExe -NodeExe $nodeExe
 }
 
 $managedAgentsRoot = $null

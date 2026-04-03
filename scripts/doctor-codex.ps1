@@ -18,9 +18,20 @@ function Get-ToolPath {
   }
 }
 
+function Test-IsWindowsSystemBash {
+  param([string]$Path)
+  if (-not $Path) {
+    return $false
+  }
+
+  $normalized = [IO.Path]::GetFullPath($Path)
+  $systemRoot = [IO.Path]::GetFullPath((Join-Path $env:WINDIR 'System32\bash.exe'))
+  return $normalized.Equals($systemRoot, [System.StringComparison]::OrdinalIgnoreCase)
+}
+
 function Find-GitBash {
   $fromPath = Get-ToolPath 'bash'
-  if ($fromPath) {
+  if ($fromPath -and -not (Test-IsWindowsSystemBash $fromPath)) {
     return $fromPath
   }
 
@@ -37,6 +48,26 @@ function Find-GitBash {
       (Join-Path ${env:ProgramFiles(x86)} 'Git\usr\bin\bash.exe')
     )
   }
+
+  foreach ($candidate in $candidates) {
+    if ($candidate -and (Test-Path $candidate)) {
+      return $candidate
+    }
+  }
+
+  return $null
+}
+
+function Find-Bun {
+  $fromPath = Get-ToolPath 'bun'
+  if ($fromPath) {
+    return $fromPath
+  }
+
+  $candidates = @(
+    (Join-Path $HOME '.bun\bin\bun.exe'),
+    (Join-Path $HOME '.bun\bin\bun')
+  )
 
   foreach ($candidate in $candidates) {
     if ($candidate -and (Test-Path $candidate)) {
@@ -69,7 +100,7 @@ Write-Host ''
 $toolChecks = @(
   @{ Label = 'git';   Value = (Get-ToolPath 'git') },
   @{ Label = 'bash';  Value = (Find-GitBash) },
-  @{ Label = 'bun';   Value = (Get-ToolPath 'bun') },
+  @{ Label = 'bun';   Value = (Find-Bun) },
   @{ Label = 'node';  Value = (Get-ToolPath 'node') },
   @{ Label = 'codex'; Value = (Get-ToolPath 'codex') }
 )

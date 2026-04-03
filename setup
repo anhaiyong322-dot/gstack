@@ -20,6 +20,8 @@ case "$(uname -s)" in
   MINGW*|MSYS*|CYGWIN*|Windows_NT) IS_WINDOWS=1 ;;
 esac
 
+BUN_WINDOWS_CACHE_DIR="$SOURCE_GSTACK_DIR/.bun-install-cache"
+
 # ─── Parse flags ──────────────────────────────────────────────
 HOST="claude"
 LOCAL_INSTALL=0
@@ -181,6 +183,41 @@ install_link_or_copy() {
   fi
 }
 
+bun_install_cmd() {
+  if [ "$IS_WINDOWS" -eq 1 ]; then
+    mkdir -p "$BUN_WINDOWS_CACHE_DIR"
+    bun install --backend copyfile --cache-dir "$BUN_WINDOWS_CACHE_DIR" "$@"
+  else
+    bun install "$@"
+  fi
+}
+
+install_playwright_chromium() {
+  if [ "$IS_WINDOWS" -eq 1 ]; then
+    if ! command -v node >/dev/null 2>&1; then
+      echo "gstack setup failed: Node.js is required on Windows (Bun cannot launch Chromium due to a pipe bug)" >&2
+      echo "  Install Node.js: https://nodejs.org/" >&2
+      exit 1
+    fi
+
+    if [ ! -f "$SOURCE_GSTACK_DIR/node_modules/playwright/cli.js" ]; then
+      echo "gstack setup failed: Playwright CLI missing after install." >&2
+      echo "  Re-run setup after dependencies finish installing." >&2
+      exit 1
+    fi
+
+    (
+      cd "$SOURCE_GSTACK_DIR"
+      node node_modules/playwright/cli.js install chromium
+    )
+  else
+    (
+      cd "$SOURCE_GSTACK_DIR"
+      bunx playwright install chromium
+    )
+  fi
+}
+
 # 1. Build browse binary if needed (smart rebuild: stale sources, package.json, lock)
 NEEDS_BUILD=0
 if [ ! -x "$BROWSE_BIN" ]; then
@@ -197,7 +234,7 @@ if [ "$NEEDS_BUILD" -eq 1 ]; then
   echo "Building browse binary..."
   (
     cd "$SOURCE_GSTACK_DIR"
-    bun install
+    bun_install_cmd
     bun run build
   )
   # Safety net: write .version if build script didn't (e.g., git not available during build)
@@ -223,7 +260,7 @@ if [ "$NEEDS_AGENTS_GEN" -eq 1 ] && [ "$NEEDS_BUILD" -eq 0 ]; then
   echo "Generating .agents/ skill docs..."
   (
     cd "$SOURCE_GSTACK_DIR"
-    bun install --frozen-lockfile 2>/dev/null || bun install
+    bun_install_cmd --frozen-lockfile 2>/dev/null || bun_install_cmd
     bun run gen:skill-docs --host codex
   )
 fi
@@ -231,10 +268,7 @@ fi
 # 2. Ensure Playwright's Chromium is available
 if ! ensure_playwright_browser; then
   echo "Installing Playwright Chromium..."
-  (
-    cd "$SOURCE_GSTACK_DIR"
-    bunx playwright install chromium
-  )
+  install_playwright_chromium
 
   if [ "$IS_WINDOWS" -eq 1 ]; then
     # On Windows, Node.js launches Chromium (not Bun — see oven-sh/bun#4253).

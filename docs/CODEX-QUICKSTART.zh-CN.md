@@ -72,6 +72,14 @@ codex
 
 ## 排查方式
 
+如果安装脚本提示缺少 `bun`，可以先在 PowerShell 中执行：
+
+```powershell
+powershell -c "irm bun.sh/install.ps1|iex"
+```
+
+安装完成后，重新打开一个 PowerShell 窗口，或者在当前窗口确认 Bun 已进入 `PATH` 后再重试。
+
 如果安装内容漂移了，可以重新执行：
 
 ```powershell

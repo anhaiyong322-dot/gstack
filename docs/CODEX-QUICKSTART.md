@@ -72,6 +72,14 @@ The repository-local source of truth is `.gstack/codex/GSTACK-CODEX.md`.
 
 ## Troubleshooting
 
+If setup says `bun` is missing, install it from PowerShell:
+
+```powershell
+powershell -c "irm bun.sh/install.ps1|iex"
+```
+
+Then open a new PowerShell window, or re-run the installer from the same shell after Bun is on `PATH`.
+
 If setup drifted, rerun:
 
 ```powershell
