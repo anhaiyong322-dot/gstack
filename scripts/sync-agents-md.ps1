@@ -67,10 +67,10 @@ function Get-InstallHint {
 
   $repoLocalInstall = Join-Path $ResolvedProjectRoot '.agents\skills\gstack'
   if ((Test-Path $repoLocalInstall) -and ((Resolve-Path $repoLocalInstall).Path -eq $ResolvedRepoRoot)) {
-    return '.\.agents\skills\gstack\install-codex.ps1 -RepoLocal -ProjectRoot .'
+    return '.\.agents\skills\gstack\bootstrap-codex-project.ps1 -ProjectRoot .'
   }
 
-  return "Set-Location $ResolvedRepoRoot`n.\install-codex.ps1"
+  return "Set-Location $ResolvedRepoRoot`n.\install-codex.ps1 -AgentsProjectRoot $ResolvedProjectRoot"
 }
 
 function Build-ManagedSection {
@@ -88,7 +88,15 @@ function Build-ManagedSection {
 
 gstack is installed for this repository. Prefer the gstack skill pack when the task matches one of its workflows instead of improvising the process from scratch.
 
-Use $($tick)gstack-browse$($tick) for browser automation, screenshots, login flows, and QA against real sites. Use $($tick)gstack-review$($tick) before landing risky changes, $($tick)gstack-qa$($tick) after UI or workflow changes, $($tick)gstack-ship$($tick) when preparing a branch to land, $($tick)gstack-office-hours$($tick) for product discovery, and $($tick)gstack-plan-ceo-review$($tick), $($tick)gstack-plan-eng-review$($tick), $($tick)gstack-plan-design-review$($tick) when the work needs product, architecture, or design review. Use $($tick)gstack-careful$($tick), $($tick)gstack-freeze$($tick), or $($tick)gstack-guard$($tick) before risky operations.
+Route work through gstack when the user intent matches one of these workflows:
+- Product discovery, feature framing, or spec shaping: $($tick)gstack-office-hours$($tick), then $($tick)gstack-plan-ceo-review$($tick), $($tick)gstack-plan-eng-review$($tick), and $($tick)gstack-plan-design-review$($tick) as needed.
+- Browser QA, screenshots, login flows, deployment verification, or authenticated testing: $($tick)gstack-browse$($tick), $($tick)gstack-qa$($tick), or $($tick)gstack-qa-only$($tick).
+- Pre-merge review and release prep: $($tick)gstack-review$($tick), $($tick)gstack-ship$($tick), and $($tick)gstack-document-release$($tick).
+- Root-cause debugging or failure analysis: $($tick)gstack-investigate$($tick).
+- High-risk commands or tightly scoped edits: $($tick)gstack-careful$($tick), $($tick)gstack-freeze$($tick), or $($tick)gstack-guard$($tick).
+- One-command review pipelines and retros: $($tick)gstack-autoplan$($tick) and $($tick)gstack-retro$($tick).
+
+When one of the routes above fits, prefer the gstack skill over ad-hoc prompting. In particular, do not default to generic browser tooling when $($tick)gstack-browse$($tick) or $($tick)gstack-qa$($tick) is a better fit.
 
 Available gstack skills: $skillList
 

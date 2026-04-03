@@ -153,11 +153,15 @@ if ($projectRootResolved) {
   $agentsContent = if (Test-Path $agentsPath) { Get-Content $agentsPath -Raw } else { '' }
   $hasManagedSection = $agentsContent -match '<!-- gstack:begin -->' -and $agentsContent -match '<!-- gstack:end -->'
   $hasBrowseHint = $agentsContent -match 'gstack-browse'
+  $hasReviewHint = $agentsContent -match 'gstack-review'
+  $hasShipHint = $agentsContent -match 'gstack-ship'
 
   Write-Host ''
   Write-Check -Label 'AGENTS.md' -Ok (Test-Path $agentsPath) -Detail $agentsPath
   Write-Check -Label 'gstack block' -Ok $hasManagedSection -Detail 'managed gstack section markers'
   Write-Check -Label 'browse hint' -Ok $hasBrowseHint -Detail 'contains gstack-browse guidance'
+  Write-Check -Label 'review hint' -Ok $hasReviewHint -Detail 'contains gstack-review guidance'
+  Write-Check -Label 'ship hint' -Ok $hasShipHint -Detail 'contains gstack-ship guidance'
   if (-not (Test-Path $agentsPath)) {
     $issues++
   }
@@ -165,6 +169,12 @@ if ($projectRootResolved) {
     $issues++
   }
   if (-not $hasBrowseHint) {
+    $issues++
+  }
+  if (-not $hasReviewHint) {
+    $issues++
+  }
+  if (-not $hasShipHint) {
     $issues++
   }
 }

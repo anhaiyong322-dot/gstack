@@ -81,12 +81,22 @@ Set-Location $HOME\gstack
 
 `install-codex.ps1` finds Git Bash automatically, checks `bun` and `node`, runs `./setup --host codex`, updates the target repo's `AGENTS.md` with a managed gstack section, and then runs `scripts/doctor-codex.ps1` so you can see whether the generated skills, runtime root, and project instructions are healthy.
 
+One-command project bootstrap:
+
+```powershell
+git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git $HOME\gstack
+Set-Location $HOME\gstack
+.\bootstrap-codex-project.ps1 -ProjectRoot E:\your-project
+```
+
 If you installed gstack globally and want to wire it into a specific project later, point the installer at that repo:
 
 ```powershell
 Set-Location $HOME\gstack
 .\install-codex.ps1 -AgentsProjectRoot E:\your-project
 ```
+
+The managed `AGENTS.md` block now routes Codex by workflow stage: planning goes to `gstack-office-hours` and the `gstack-plan-*` skills, browser QA goes to `gstack-browse` or `gstack-qa`, code review goes to `gstack-review`, shipping goes to `gstack-ship`, and risky operations go through `gstack-careful` or `gstack-guard`.
 
 Install to one repo:
 
