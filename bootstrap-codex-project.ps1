@@ -3,7 +3,8 @@ param(
   [string]$ProjectRoot = (Get-Location).Path,
   [string]$RepoUrl = 'https://github.com/anhaiyong322-dot/gstack.git',
   [switch]$SkipDoctor,
-  [switch]$SkipAgentsMd
+  [switch]$SkipAgentsMd,
+  [switch]$SkipProjectScaffold
 )
 
 $ErrorActionPreference = 'Stop'
@@ -45,6 +46,9 @@ if ($SkipDoctor) {
 }
 if ($SkipAgentsMd) {
   $params.SkipAgentsMd = $true
+}
+if ($SkipProjectScaffold) {
+  $params.SkipProjectScaffold = $true
 }
 
 & $installScript @params

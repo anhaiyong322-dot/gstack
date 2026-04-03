@@ -150,11 +150,22 @@ if ($PSBoundParameters.ContainsKey('ProjectRoot') -and $ProjectRoot) {
 
 if ($projectRootResolved) {
   $agentsPath = Join-Path $projectRootResolved 'AGENTS.md'
+  $playbookPath = Join-Path $projectRootResolved '.gstack\codex\GSTACK-CODEX.md'
+  $reviewPromptPath = Join-Path $projectRootResolved '.gstack\codex\prompts\review.md'
+  $qaPromptPath = Join-Path $projectRootResolved '.gstack\codex\prompts\qa.md'
+  $shipPromptPath = Join-Path $projectRootResolved '.gstack\codex\prompts\ship.md'
+  $autoplanPromptPath = Join-Path $projectRootResolved '.gstack\codex\prompts\autoplan.md'
   $agentsContent = if (Test-Path $agentsPath) { Get-Content $agentsPath -Raw } else { '' }
+  $playbookContent = if (Test-Path $playbookPath) { Get-Content $playbookPath -Raw } else { '' }
   $hasManagedSection = $agentsContent -match '<!-- gstack:begin -->' -and $agentsContent -match '<!-- gstack:end -->'
   $hasBrowseHint = $agentsContent -match 'gstack-browse'
   $hasReviewHint = $agentsContent -match 'gstack-review'
   $hasShipHint = $agentsContent -match 'gstack-ship'
+  $hasPlaybookReference = $agentsContent -match '\.gstack/codex/GSTACK-CODEX.md'
+  $hasPlaybookReview = $playbookContent -match 'gstack-review'
+  $hasPlaybookQa = $playbookContent -match 'gstack-qa'
+  $hasPlaybookShip = $playbookContent -match 'gstack-ship'
+  $hasPlaybookAutoplan = $playbookContent -match 'gstack-autoplan'
 
   Write-Host ''
   Write-Check -Label 'AGENTS.md' -Ok (Test-Path $agentsPath) -Detail $agentsPath
@@ -162,6 +173,16 @@ if ($projectRootResolved) {
   Write-Check -Label 'browse hint' -Ok $hasBrowseHint -Detail 'contains gstack-browse guidance'
   Write-Check -Label 'review hint' -Ok $hasReviewHint -Detail 'contains gstack-review guidance'
   Write-Check -Label 'ship hint' -Ok $hasShipHint -Detail 'contains gstack-ship guidance'
+  Write-Check -Label 'playbook ref' -Ok $hasPlaybookReference -Detail 'AGENTS points to .gstack/codex/GSTACK-CODEX.md'
+  Write-Check -Label 'playbook' -Ok (Test-Path $playbookPath) -Detail $playbookPath
+  Write-Check -Label 'review prompt' -Ok (Test-Path $reviewPromptPath) -Detail $reviewPromptPath
+  Write-Check -Label 'qa prompt' -Ok (Test-Path $qaPromptPath) -Detail $qaPromptPath
+  Write-Check -Label 'ship prompt' -Ok (Test-Path $shipPromptPath) -Detail $shipPromptPath
+  Write-Check -Label 'autoplan prmpt' -Ok (Test-Path $autoplanPromptPath) -Detail $autoplanPromptPath
+  Write-Check -Label 'playbook rvw' -Ok $hasPlaybookReview -Detail 'playbook contains gstack-review'
+  Write-Check -Label 'playbook qa' -Ok $hasPlaybookQa -Detail 'playbook contains gstack-qa'
+  Write-Check -Label 'playbook ship' -Ok $hasPlaybookShip -Detail 'playbook contains gstack-ship'
+  Write-Check -Label 'playbook plan' -Ok $hasPlaybookAutoplan -Detail 'playbook contains gstack-autoplan'
   if (-not (Test-Path $agentsPath)) {
     $issues++
   }
@@ -175,6 +196,36 @@ if ($projectRootResolved) {
     $issues++
   }
   if (-not $hasShipHint) {
+    $issues++
+  }
+  if (-not $hasPlaybookReference) {
+    $issues++
+  }
+  if (-not (Test-Path $playbookPath)) {
+    $issues++
+  }
+  if (-not (Test-Path $reviewPromptPath)) {
+    $issues++
+  }
+  if (-not (Test-Path $qaPromptPath)) {
+    $issues++
+  }
+  if (-not (Test-Path $shipPromptPath)) {
+    $issues++
+  }
+  if (-not (Test-Path $autoplanPromptPath)) {
+    $issues++
+  }
+  if (-not $hasPlaybookReview) {
+    $issues++
+  }
+  if (-not $hasPlaybookQa) {
+    $issues++
+  }
+  if (-not $hasPlaybookShip) {
+    $issues++
+  }
+  if (-not $hasPlaybookAutoplan) {
     $issues++
   }
 }
