@@ -87,13 +87,16 @@ function Build-ManagedSection {
 ## gstack
 
 gstack is installed for this repository. Prefer the gstack skill pack when the task matches one of its workflows instead of improvising the process from scratch.
+Use $($tick).gstack/codex/GSTACK-CODEX.md$($tick) as the repository-local playbook for sequencing review, QA, ship, and planning workflows.
 
 Route work through gstack when the user intent matches one of these workflows:
 - Product discovery, feature framing, or spec shaping: $($tick)gstack-office-hours$($tick), then $($tick)gstack-plan-ceo-review$($tick), $($tick)gstack-plan-eng-review$($tick), and $($tick)gstack-plan-design-review$($tick) as needed.
+- Canonical one-command planning path: $($tick)gstack-autoplan$($tick), or start from $($tick).gstack/codex/prompts/autoplan.md$($tick) when you need the repo's default planning prompt.
 - Browser QA, screenshots, login flows, deployment verification, or authenticated testing: $($tick)gstack-browse$($tick), $($tick)gstack-qa$($tick), or $($tick)gstack-qa-only$($tick).
-- Pre-merge review and release prep: $($tick)gstack-review$($tick), $($tick)gstack-ship$($tick), and $($tick)gstack-document-release$($tick).
+- Pre-merge review and release prep: $($tick)gstack-review$($tick), $($tick)gstack-ship$($tick), and $($tick)gstack-document-release$($tick). Start from $($tick).gstack/codex/prompts/review.md$($tick) or $($tick).gstack/codex/prompts/ship.md$($tick) when you need the repo-default prompt form.
 - Root-cause debugging or failure analysis: $($tick)gstack-investigate$($tick).
 - High-risk commands or tightly scoped edits: $($tick)gstack-careful$($tick), $($tick)gstack-freeze$($tick), or $($tick)gstack-guard$($tick).
+- Browser-driven regression or staging checks: start from $($tick).gstack/codex/prompts/qa.md$($tick), then use $($tick)gstack-qa$($tick) or $($tick)gstack-qa-only$($tick).
 - One-command review pipelines and retros: $($tick)gstack-autoplan$($tick) and $($tick)gstack-retro$($tick).
 
 When one of the routes above fits, prefer the gstack skill over ad-hoc prompting. In particular, do not default to generic browser tooling when $($tick)gstack-browse$($tick) or $($tick)gstack-qa$($tick) is a better fit.
@@ -102,9 +105,9 @@ Available gstack skills: $skillList
 
 If Codex skips loading gstack skills or the instructions look stale, rerun:
 
-```powershell
+~~~powershell
 $InstallHint
-```
+~~~
 <!-- gstack:end -->
 "@
 }
