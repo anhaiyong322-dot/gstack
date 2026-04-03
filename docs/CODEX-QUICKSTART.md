@@ -1,6 +1,6 @@
 # Codex Quickstart
 
-Updated: 2026-04-03
+Updated: 2026-04-04
 
 [中文版本](CODEX-QUICKSTART.zh-CN.md)
 
@@ -215,3 +215,109 @@ For a Windows + Codex workflow, the recommended order is:
 1. bootstrap one real project first
 2. confirm the workflow feels right
 3. add a global install later only if you want gstack in every repo
+
+### 7. What This Setup Gives You
+
+In a project-local Codex install, this setup gives you four layers of functionality:
+
+- workflow routing: `AGENTS.md` and `.gstack/codex/GSTACK-CODEX.md` tell Codex when to switch into planning, review, QA, release, or safety modes
+- reusable skill pack: 28 installed gstack skills, usually namespaced as `gstack-*`
+- browser automation: real browser-driven QA, screenshots, login flows, staging checks, and performance checks
+- repo-local prompts: `.gstack/codex/prompts/review.md`, `qa.md`, `ship.md`, and `autoplan.md`
+
+In practice, that means this setup can handle:
+
+- product framing and implementation planning
+- code review and release preparation
+- browser testing and authenticated QA flows
+- debugging and root-cause investigation
+- safety rails for risky commands or tightly scoped edits
+- post-release checks, retros, and ongoing workflow reuse
+
+### 8. Command Catalog
+
+By default, the Codex path in this fork uses namespaced skill names such as `gstack-review`. If your install uses short names, drop the `gstack-` prefix.
+
+#### Planning and Design
+
+| Command | Use it when |
+|---|---|
+| `gstack` | you want the general entry point and are not sure which workflow to start with |
+| `gstack-office-hours` | the product idea is still fuzzy and you need to sharpen the problem |
+| `gstack-plan-ceo-review` | you want a product or founder-level challenge of the plan |
+| `gstack-plan-eng-review` | you want architecture, edge cases, and tests reviewed before implementation |
+| `gstack-plan-design-review` | you want interaction and UX quality reviewed before implementation |
+| `gstack-autoplan` | you want one command that turns an idea into a reviewed implementation plan |
+| `gstack-design-consultation` | you need a stronger design direction or system |
+| `gstack-design-review` | the UI already exists and you want design feedback on the actual implementation |
+| `gstack-retro` | you want to review a recent sprint, delivery cycle, or project rhythm |
+
+#### Code, Debugging, and Release
+
+| Command | Use it when |
+|---|---|
+| `gstack-review` | the branch is ready for a pre-merge code review |
+| `gstack-investigate` | there is a bug or regression and you need root-cause analysis before fixing |
+| `gstack-ship` | you want release preparation, test checks, and PR readiness |
+| `gstack-land-and-deploy` | the change is approved and you want to merge and deploy |
+| `gstack-document-release` | code has shipped and docs now need to match reality |
+| `gstack-setup-deploy` | you need to configure deployment assumptions before using release automation |
+
+#### Browser, QA, and Performance
+
+| Command | Use it when |
+|---|---|
+| `gstack-browse` | you need browser control, screenshots, clicks, and page inspection |
+| `gstack-qa` | you want end-to-end browser QA and are willing to let the workflow fix issues |
+| `gstack-qa-only` | you want QA findings only, without code changes |
+| `gstack-benchmark` | you want page-speed and resource-size checks |
+| `gstack-canary` | you want post-deploy observation for regressions or failures |
+| `gstack-connect-chrome` | you want to connect to a visible Chrome window and watch the flow live |
+| `gstack-setup-browser-cookies` | you need authenticated browser sessions for QA or staging |
+
+#### Security, Guardrails, and Maintenance
+
+| Command | Use it when |
+|---|---|
+| `gstack-cso` | you want a security review or threat-model pass |
+| `gstack-careful` | you want warnings before risky or destructive commands |
+| `gstack-freeze` | you want to lock edits to a narrow directory or scope |
+| `gstack-guard` | you want both command caution and edit-scope protection together |
+| `gstack-unfreeze` | you want to remove a previous freeze boundary |
+| `gstack-upgrade` | you want to update gstack itself |
+
+### 9. Most Common Command Sequences
+
+For a new feature:
+
+1. `gstack-office-hours`
+2. `gstack-autoplan` or the `gstack-plan-*` skills
+3. implementation
+4. `gstack-review`
+5. `gstack-qa`
+6. `gstack-ship`
+
+For a production bug:
+
+1. `gstack-investigate`
+2. implement the fix
+3. `gstack-review`
+4. `gstack-qa` or `gstack-qa-only`
+5. `gstack-ship`
+
+For a browser-only validation pass:
+
+1. `gstack-browse` or `gstack-connect-chrome`
+2. `gstack-setup-browser-cookies` if authentication is needed
+3. `gstack-qa` or `gstack-qa-only`
+
+### 10. Repo-Local Prompt Shortcuts
+
+Every bootstrapped repo also gets these prompt files:
+
+- `.gstack/codex/prompts/review.md`
+- `.gstack/codex/prompts/qa.md`
+- `.gstack/codex/prompts/ship.md`
+- `.gstack/codex/prompts/autoplan.md`
+
+Use them when you want Codex to follow the repo's default framing for review, QA, shipping, or planning without re-explaining the workflow each time.

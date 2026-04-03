@@ -136,7 +136,17 @@ This means:
 - this fork is optimized for repeated Windows + Codex rollout
 - the underlying gstack skill system is still upstream gstack
 
-For a fuller explanation, see [Codex Quickstart](docs/CODEX-QUICKSTART.md) and [中文快速开始](docs/CODEX-QUICKSTART.zh-CN.md).
+By default, the Codex route in this fork uses namespaced commands such as `gstack-review`, `gstack-qa`, and `gstack-ship`.
+The most common workflow is:
+
+1. `gstack-office-hours`
+2. `gstack-autoplan`
+3. implementation
+4. `gstack-review`
+5. `gstack-qa`
+6. `gstack-ship`
+
+For the complete command catalog, grouped use cases, and a fuller explanation, see [Codex Quickstart](docs/CODEX-QUICKSTART.md) and [中文快速开始](docs/CODEX-QUICKSTART.zh-CN.md).
 
 Install to one repo:
 

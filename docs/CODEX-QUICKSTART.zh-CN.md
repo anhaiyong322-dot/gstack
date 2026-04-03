@@ -1,6 +1,6 @@
 # Codex 快速开始
 
-更新日期：2026-04-03
+更新日期：2026-04-04
 
 [English Version](CODEX-QUICKSTART.md)
 
@@ -215,3 +215,109 @@ OpenAI 模型大脑 + Codex 运行时 + gstack 工作流包
 1. 先拿一个真实项目做项目级接入
 2. 确认这套流程符合你的习惯
 3. 如果后面你希望每个仓库都默认可用，再补全局安装
+
+### 7. 这套系统现在能做什么
+
+在项目级 Codex 安装里，这套系统实际给你的是 4 层能力：
+
+- 工作流路由：`AGENTS.md` 和 `.gstack/codex/GSTACK-CODEX.md` 会告诉 Codex 什么时候进入规划、审查、QA、发版和安全模式
+- 可复用技能包：已经安装好的 28 个 gstack skills，默认通常是 `gstack-*` 命名空间
+- 浏览器自动化：真实浏览器驱动的 QA、截图、登录态测试、staging 验证、性能检查
+- 项目级 prompt：`.gstack/codex/prompts/review.md`、`qa.md`、`ship.md`、`autoplan.md`
+
+换句话说，这套系统现在已经可以覆盖：
+
+- 需求梳理与实施方案规划
+- 代码审查与发布准备
+- 浏览器测试与带登录态的 QA 流程
+- 调试与根因分析
+- 高风险命令和限定编辑范围的保护
+- 发布后检查、复盘，以及可重复使用的项目工作流
+
+### 8. 命令对照表
+
+默认情况下，这份 fork 的 Codex 安装使用的是带命名空间的技能名，例如 `gstack-review`。如果你的安装使用短名，只需要把 `gstack-` 前缀去掉即可。
+
+#### 规划与设计
+
+| 命令 | 什么时候用 |
+|---|---|
+| `gstack` | 不确定该从哪个流程开始时，用总入口先接管 |
+| `gstack-office-hours` | 产品想法还模糊，需要先把问题、范围、价值想清楚 |
+| `gstack-plan-ceo-review` | 想从产品/创始人视角重新挑战方案 |
+| `gstack-plan-eng-review` | 想在开发前把架构、边界、测试、风险补齐 |
+| `gstack-plan-design-review` | 想在开发前先把交互与体验问题审清楚 |
+| `gstack-autoplan` | 想一条命令把想法变成完整的实施方案 |
+| `gstack-design-consultation` | 需要更强的设计方向、风格或设计系统建议 |
+| `gstack-design-review` | 界面已经做出来了，想对真实实现做设计审查 |
+| `gstack-retro` | 想复盘一个迭代、一次交付，或一段开发节奏 |
+
+#### 代码、调试与发布
+
+| 命令 | 什么时候用 |
+|---|---|
+| `gstack-review` | 分支准备合并前，做代码审查 |
+| `gstack-investigate` | 出现 bug 或回归时，先做根因分析再修复 |
+| `gstack-ship` | 准备发版、检查测试、整理 PR |
+| `gstack-land-and-deploy` | 改动已经批准，继续合并并部署 |
+| `gstack-document-release` | 代码已发布，文档也需要同步到真实状态 |
+| `gstack-setup-deploy` | 在使用发布自动化前，先把部署前提配置好 |
+
+#### 浏览器、QA 与性能
+
+| 命令 | 什么时候用 |
+|---|---|
+| `gstack-browse` | 需要浏览器控制、截图、点击、看页面状态 |
+| `gstack-qa` | 需要完整浏览器 QA，而且允许流程顺手修问题 |
+| `gstack-qa-only` | 只需要 QA 报告，不希望自动改代码 |
+| `gstack-benchmark` | 需要检查页面性能、加载速度、资源体积 |
+| `gstack-canary` | 需要在部署后持续观察是否有回归或异常 |
+| `gstack-connect-chrome` | 想连接可见的真实 Chrome，并实时看它操作 |
+| `gstack-setup-browser-cookies` | QA 或 staging 测试需要登录态 |
+
+#### 安全、护栏与维护
+
+| 命令 | 什么时候用 |
+|---|---|
+| `gstack-cso` | 想做安全审查或威胁建模 |
+| `gstack-careful` | 想在危险命令前得到提醒 |
+| `gstack-freeze` | 想把编辑范围锁定在一个目录或一个小范围 |
+| `gstack-guard` | 想同时启用命令提醒和编辑范围保护 |
+| `gstack-unfreeze` | 想解除之前的 `freeze` 限制 |
+| `gstack-upgrade` | 想升级 gstack 自身 |
+
+### 9. 最常用的命令顺序
+
+做一个新功能时，最常见的顺序是：
+
+1. `gstack-office-hours`
+2. `gstack-autoplan` 或一组 `gstack-plan-*`
+3. 实现功能
+4. `gstack-review`
+5. `gstack-qa`
+6. `gstack-ship`
+
+修一个线上或疑难 bug 时，最常见的顺序是：
+
+1. `gstack-investigate`
+2. 实现修复
+3. `gstack-review`
+4. `gstack-qa` 或 `gstack-qa-only`
+5. `gstack-ship`
+
+只做浏览器验证时，最常见的顺序是：
+
+1. `gstack-browse` 或 `gstack-connect-chrome`
+2. 如果需要登录态，先接 `gstack-setup-browser-cookies`
+3. `gstack-qa` 或 `gstack-qa-only`
+
+### 10. 项目级 Prompt 快捷入口
+
+每个接入过的项目还会得到这 4 个 prompt 文件：
+
+- `.gstack/codex/prompts/review.md`
+- `.gstack/codex/prompts/qa.md`
+- `.gstack/codex/prompts/ship.md`
+- `.gstack/codex/prompts/autoplan.md`
+
+当你不想每次重新解释 review、QA、发版或规划流程时，直接引用这些文件，就能让 Codex 按这个仓库的默认工作流来执行。
