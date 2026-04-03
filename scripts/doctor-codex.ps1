@@ -2,7 +2,8 @@
 param(
   [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path,
   [string]$CodexSkillsRoot = (Join-Path $HOME '.codex\skills'),
-  [switch]$RepoLocal
+  [switch]$RepoLocal,
+  [string]$ProjectRoot
 )
 
 $ErrorActionPreference = 'Stop'
@@ -138,6 +139,34 @@ if ($installedSkillDirs.Count -le 0) {
 }
 if (-not $installedRootSkill) {
   $issues++
+}
+
+$projectRootResolved = $null
+if ($PSBoundParameters.ContainsKey('ProjectRoot') -and $ProjectRoot) {
+  $projectRootResolved = (Resolve-Path $ProjectRoot).Path
+} elseif ($RepoLocal) {
+  $projectRootResolved = (Resolve-Path (Join-Path $repoRoot '..\..\..')).Path
+}
+
+if ($projectRootResolved) {
+  $agentsPath = Join-Path $projectRootResolved 'AGENTS.md'
+  $agentsContent = if (Test-Path $agentsPath) { Get-Content $agentsPath -Raw } else { '' }
+  $hasManagedSection = $agentsContent -match '<!-- gstack:begin -->' -and $agentsContent -match '<!-- gstack:end -->'
+  $hasBrowseHint = $agentsContent -match 'gstack-browse'
+
+  Write-Host ''
+  Write-Check -Label 'AGENTS.md' -Ok (Test-Path $agentsPath) -Detail $agentsPath
+  Write-Check -Label 'gstack block' -Ok $hasManagedSection -Detail 'managed gstack section markers'
+  Write-Check -Label 'browse hint' -Ok $hasBrowseHint -Detail 'contains gstack-browse guidance'
+  if (-not (Test-Path $agentsPath)) {
+    $issues++
+  }
+  if (-not $hasManagedSection) {
+    $issues++
+  }
+  if (-not $hasBrowseHint) {
+    $issues++
+  }
 }
 
 if ($issues -gt 0) {

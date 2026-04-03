@@ -4,8 +4,10 @@ param(
   [string]$InstallDir = (Join-Path $HOME 'gstack'),
   [switch]$RepoLocal,
   [string]$ProjectRoot = (Get-Location).Path,
+  [string]$AgentsProjectRoot,
   [switch]$SkipSetup,
-  [switch]$SkipDoctor
+  [switch]$SkipDoctor,
+  [switch]$SkipAgentsMd
 )
 
 $ErrorActionPreference = 'Stop'
@@ -176,14 +178,36 @@ if (-not $SkipSetup) {
   Invoke-Setup -BashExe $bashExe -RepoDir $repoDir
 }
 
+$managedAgentsRoot = $null
+if ($RepoLocal) {
+  $managedAgentsRoot = (Resolve-Path $ProjectRoot).Path
+} elseif ($PSBoundParameters.ContainsKey('AgentsProjectRoot') -and $AgentsProjectRoot) {
+  $managedAgentsRoot = (Resolve-Path $AgentsProjectRoot).Path
+}
+
+if (-not $SkipAgentsMd -and $managedAgentsRoot) {
+  $syncScript = Join-Path $repoDir 'scripts\sync-agents-md.ps1'
+  if (Test-Path $syncScript) {
+    Write-Step 'Updating project AGENTS.md'
+    & $syncScript -RepoRoot $repoDir -ProjectRoot $managedAgentsRoot
+    if ($LASTEXITCODE -ne 0) {
+      throw "sync-agents-md.ps1 failed with exit code $LASTEXITCODE"
+    }
+  }
+}
+
 if (-not $SkipDoctor) {
   $doctorScript = Join-Path $repoDir 'scripts\doctor-codex.ps1'
   if (Test-Path $doctorScript) {
     Write-Step 'Running Codex doctor'
     if ($RepoLocal) {
-      & $doctorScript -RepoRoot $repoDir -RepoLocal
+      & $doctorScript -RepoRoot $repoDir -RepoLocal -ProjectRoot $managedAgentsRoot
     } else {
-      & $doctorScript -RepoRoot $repoDir
+      if ($managedAgentsRoot) {
+        & $doctorScript -RepoRoot $repoDir -ProjectRoot $managedAgentsRoot
+      } else {
+        & $doctorScript -RepoRoot $repoDir
+      }
     }
     if ($LASTEXITCODE -ne 0) {
       throw "doctor-codex.ps1 reported issues (exit code $LASTEXITCODE)"
@@ -200,6 +224,9 @@ $codexSkillsRoot = if ($RepoLocal) {
 Write-Step 'Install complete'
 Write-Info "Source repo : $repoDir"
 Write-Info "Codex skills: $codexSkillsRoot"
+if ($managedAgentsRoot) {
+  Write-Info ("AGENTS.md   : {0}" -f (Join-Path $managedAgentsRoot 'AGENTS.md'))
+}
 if (-not $codexExe) {
   Write-Info 'Install Codex CLI before use: https://github.com/openai/codex'
 }
