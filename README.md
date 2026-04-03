@@ -63,10 +63,28 @@ Real files get committed to your repo (not a submodule), so `git clone` just wor
 
 gstack works on any agent that supports the [SKILL.md standard](https://github.com/anthropics/claude-code). Skills live in `.agents/skills/` and are discovered automatically.
 
+Windows PowerShell install from this fork:
+
+```powershell
+git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git $HOME\gstack
+Set-Location $HOME\gstack
+.\install-codex.ps1
+```
+
+Project-local install into your current repo:
+
+```powershell
+git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git $HOME\gstack
+Set-Location $HOME\gstack
+.\install-codex.ps1 -RepoLocal -ProjectRoot E:\your-project
+```
+
+`install-codex.ps1` finds Git Bash automatically, checks `bun` and `node`, runs `./setup --host codex`, then runs `scripts/doctor-codex.ps1` so you can see whether the generated skills and runtime root are healthy.
+
 Install to one repo:
 
 ```bash
-git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git .agents/skills/gstack
+git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git .agents/skills/gstack
 cd .agents/skills/gstack && ./setup --host codex
 ```
 
@@ -75,7 +93,7 @@ When setup runs from `.agents/skills/gstack`, it installs the generated Codex sk
 Install once for your user account:
 
 ```bash
-git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/gstack
+git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git ~/gstack
 cd ~/gstack && ./setup --host codex
 ```
 
@@ -86,7 +104,7 @@ discovery from the source repo checkout.
 Or let setup auto-detect which agents you have installed:
 
 ```bash
-git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/gstack
+git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git ~/gstack
 cd ~/gstack && ./setup --host auto
 ```
 
@@ -265,7 +283,7 @@ Data is stored in [Supabase](https://supabase.com) (open source Firebase alterna
 
 **Codex says "Skipped loading skill(s) due to invalid SKILL.md"?** Your Codex skill descriptions are stale. Fix: `cd ~/.codex/skills/gstack && git pull && ./setup --host codex` — or for repo-local installs: `cd "$(readlink -f .agents/skills/gstack)" && git pull && ./setup --host codex`
 
-**Windows users:** gstack works on Windows 11 via Git Bash or WSL. Node.js is required in addition to Bun — Bun has a known bug with Playwright's pipe transport on Windows ([bun#4253](https://github.com/oven-sh/bun/issues/4253)). The browse server automatically falls back to Node.js. Make sure both `bun` and `node` are on your PATH.
+**Windows users:** Prefer `.\install-codex.ps1` from this fork. It locates Git Bash for you, runs `./setup --host codex`, and then runs `scripts/doctor-codex.ps1`. Node.js is still required in addition to Bun because Bun has a known bug with Playwright's pipe transport on Windows ([bun#4253](https://github.com/oven-sh/bun/issues/4253)).
 
 **Claude says it can't see the skills?** Make sure your project's `CLAUDE.md` has a gstack section. Add this:
 
