@@ -97,47 +97,121 @@ If skills are present but behavior looks stale, restart Codex in the project roo
 
 ## Appendix
 
-### Mental Model
+### 1. Relationship Diagram
 
-When you run `codex`, the runtime is still native Codex. gstack does not replace the CLI or turn Codex into a different program.
+```text
+                    you type: codex
+                         |
+                         v
+                  native Codex CLI
+                         |
+        -----------------------------------------
+        |                                       |
+        v                                       v
+reads global skill roots                 reads current repo
+`~/.codex/skills/...`                    `.agents/skills/gstack`
+                                         `.gstack/codex/...`
+                                         `AGENTS.md`
+        \_______________________   _______________________/
+                                \ /
+                                 v
+                 final behavior = native Codex
+                                + optional gstack skills
+                                + optional repo workflow rules
+```
 
-The practical stack is:
+The important point is that gstack does not replace Codex. It augments what native Codex can see and which workflow defaults it follows inside a repo.
+
+### 2. Mental Model
+
+When you run `codex`, the runtime is still native Codex. The practical stack is:
 
 - OpenAI model: the "brain" that reasons and writes
 - Codex CLI: the local agent runtime and execution environment
 - gstack: the skill pack and workflow layer on top
 
-If you also use ChatGPT as your main interface, it is best to think of ChatGPT as the entry point and Codex as the runtime.
+If you also use ChatGPT as your main interface, the cleanest mental model is:
 
-### Project-Local vs Global Install
+- ChatGPT: entry point and conversation surface
+- Codex: local runtime and executor
+- gstack: reusable workflow pack
 
-There are two distinct install modes:
+Short version:
 
-- project-local install: writes `.agents/skills/gstack`, `.gstack/codex/...`, and `AGENTS.md` into one repo
-- global install: writes the Codex runtime root under `~/.codex/skills/gstack`
+```text
+OpenAI model brain + Codex runtime + gstack workflow pack
+```
 
-Project-local install is the safer default if you want gstack to affect only one repository. In that mode:
+### 3. Native Codex vs Global gstack vs Project-Local gstack
 
-- `codex` inside that repo sees gstack
-- `codex` in unrelated directories stays effectively native
+There are three practical states:
 
-Global install makes gstack skills visible to all Codex sessions for that user account, but Codex is still the native runtime.
+| State | What exists | What changes |
+|---|---|---|
+| Native Codex only | no gstack install | Codex behaves like normal Codex |
+| Global gstack | `~/.codex/skills/gstack` | all Codex sessions can see gstack skills |
+| Project-local gstack | `.agents/skills/gstack`, `.gstack/codex/...`, `AGENTS.md` | only that repo gets the gstack workflow layer |
 
-### What This Fork Changes
+The safest default for most users is project-local install.
 
-Upstream gstack already supports Codex. This fork does not invent Codex support from scratch; it hardens the workflow for a Windows-first Codex setup.
+It gives you:
 
-The main additions in this fork are:
+- gstack inside the target repo
+- effectively native Codex outside the target repo
+- a committed workflow that teammates can inherit
 
-- `install-codex.ps1` for Windows-friendly installation
-- `bootstrap-codex-project.ps1` for one-command project onboarding
-- managed `AGENTS.md` routing for Codex workflow stages
-- project-local playbooks under `.gstack/codex/`
-- `doctor-codex.ps1` for environment and install checks
-- Windows fixes for Bun, Git Bash, and Playwright bootstrap
-- bilingual quickstart docs
+### 4. Project-Local vs Global Install
+
+These two install modes are different in scope:
+
+| Mode | Writes to | Affects | Best for |
+|---|---|---|---|
+| Project-local | `.agents/skills/gstack`, `.gstack/codex/...`, `AGENTS.md` | one repository | active production repos |
+| Global | `~/.codex/skills/gstack` | all Codex sessions for that user | personal default setup across many repos |
+
+Use project-local install when:
+
+- you want repo-specific workflow rules
+- you do not want to affect unrelated repos
+- you want teammates to get the same behavior from committed files
+
+Use global install when:
+
+- you want gstack available everywhere
+- you are comfortable with one user-wide Codex skill pack
+- you still understand that Codex itself remains native Codex
+
+### 5. Upstream gstack vs This Fork
+
+Upstream gstack already supports Codex. This fork does not invent Codex support from scratch; it makes the Codex path easier to deploy and more stable on Windows.
+
+| Dimension | Upstream gstack | This fork |
+|---|---|---|
+| Codex support | already supported via `./setup --host codex` | same support, plus Windows-first onboarding |
+| Core skills | same gstack skills and browser workflow | same core skills and browser workflow |
+| Installation | more generic and Unix-leaning | `install-codex.ps1` and `bootstrap-codex-project.ps1` |
+| Project onboarding | possible, but more manual | managed `AGENTS.md` plus `.gstack/codex/` playbooks |
+| Windows compatibility | workable, but rougher edges | fixes for Git Bash detection, Bun, and Playwright bootstrap |
+| Validation | basic setup path | `doctor-codex.ps1` for install checks |
+| Documentation | general-purpose | bilingual, Codex-first docs |
 
 In short:
 
 - upstream gstack: Codex-compatible
-- this fork: Codex-first and easier to deploy on Windows
+- this fork: Codex-first, Windows-friendlier, and easier to roll out repeatedly
+
+### 6. Which Setup Should You Choose?
+
+Use this quick rule:
+
+```text
+Want gstack in one repo only? -> project-local install
+Want gstack available everywhere? -> global install
+Want the least surprise in production repos? -> start project-local
+```
+
+For a Windows + Codex workflow, the recommended order is:
+
+1. bootstrap one real project first
+2. confirm the workflow feels right
+3. add a global install later only if you want gstack in every repo

@@ -97,47 +97,121 @@ Set-Location $HOME\gstack
 
 ## 附录
 
-### 心智模型
+### 1. 关系图
 
-当你运行 `codex` 时，底层运行的仍然是原生 Codex。gstack 不会替换 Codex CLI，也不会把 Codex 变成另一套程序。
+```text
+                    你输入：codex
+                         |
+                         v
+                  原生 Codex CLI
+                         |
+        -----------------------------------------
+        |                                       |
+        v                                       v
+读取全局技能目录                          读取当前项目目录
+`~/.codex/skills/...`                    `.agents/skills/gstack`
+                                         `.gstack/codex/...`
+                                         `AGENTS.md`
+        \_______________________   _______________________/
+                                \ /
+                                 v
+                    最终行为 = 原生 Codex
+                             + 可选的 gstack 技能
+                             + 可选的项目工作流规则
+```
 
-更准确的理解方式是：
+核心点是：gstack 不会替换 Codex。它只是增强原生 Codex 在某个目录里能看到的技能，以及默认遵循的工作流。
+
+### 2. 心智模型
+
+当你运行 `codex` 时，底层运行的仍然是原生 Codex。更准确的理解方式是：
 
 - OpenAI 模型：负责思考、推理和生成动作，相当于“大脑”
 - Codex CLI：本地 agent 运行器和执行环境
 - gstack：叠加在上面的技能包和工作流层
 
-如果你平时通过 ChatGPT 来发起和协同工作，可以把 ChatGPT 理解成入口，把 Codex 理解成本地运行时。
+如果你平时通过 ChatGPT 来发起和协同工作，也可以这样理解：
 
-### 项目级安装与全局安装
+- ChatGPT：入口和对话界面
+- Codex：本地运行时和执行器
+- gstack：可复用的工作流包
 
-这套安装有两种模式：
+一句话版本：
 
-- 项目级安装：把 `.agents/skills/gstack`、`.gstack/codex/...` 和 `AGENTS.md` 写进某一个仓库
-- 全局安装：把 Codex 的运行时写到 `~/.codex/skills/gstack`
+```text
+OpenAI 模型大脑 + Codex 运行时 + gstack 工作流包
+```
 
-如果你希望 gstack 只影响一个项目，默认应该优先选项目级安装。项目级安装下：
+### 3. 原生 Codex、全局 gstack、项目级 gstack
 
-- 在该项目里运行 `codex`，Codex 会看到 gstack
-- 在其他目录运行 `codex`，基本还是原生 Codex
+实际使用里，通常只有三种状态：
 
-全局安装会让同一用户下的所有 Codex 会话都能发现 gstack skills，但底层运行器仍然是原生 Codex。
+| 状态 | 存在什么 | 会发生什么 |
+|---|---|---|
+| 纯原生 Codex | 没有安装 gstack | Codex 按默认方式工作 |
+| 全局 gstack | `~/.codex/skills/gstack` | 所有 Codex 会话都能看到 gstack skills |
+| 项目级 gstack | `.agents/skills/gstack`、`.gstack/codex/...`、`AGENTS.md` | 只有这个仓库会得到 gstack 工作流层 |
 
-### 这份 Fork 相比原版改了什么
+对大多数人来说，默认更推荐项目级安装。
 
-原生 gstack 本身已经支持 Codex。这份 fork 不是从零发明 Codex 支持，而是在 `Windows + Codex` 这条路径上做了更强的落地和加固。
+它的好处是：
 
-这份 fork 主要新增和强化的是：
+- 目标项目里能用 gstack
+- 其他目录里的 Codex 仍然基本保持原生
+- 团队成员可以通过仓库内的提交文件继承同一套工作流
 
-- `install-codex.ps1`，更适合 Windows 的安装入口
-- `bootstrap-codex-project.ps1`，一条命令把项目接入 Codex 工作流
-- 自动维护 `AGENTS.md`，让 Codex 按工作流阶段路由
-- 生成 `.gstack/codex/` 下的项目级 playbook 和 prompts
-- `doctor-codex.ps1`，用于环境和安装自检
-- 针对 Bun、Git Bash、Playwright 的 Windows 兼容修复
-- 中英文快速开始文档
+### 4. 项目级安装与全局安装
+
+这两种安装模式的影响范围不同：
+
+| 模式 | 会写入哪里 | 影响范围 | 适合场景 |
+|---|---|---|---|
+| 项目级安装 | `.agents/skills/gstack`、`.gstack/codex/...`、`AGENTS.md` | 单个仓库 | 正在维护的真实项目 |
+| 全局安装 | `~/.codex/skills/gstack` | 当前用户的所有 Codex 会话 | 你希望所有仓库默认都能用 gstack |
+
+更适合使用项目级安装的情况：
+
+- 你希望每个仓库有自己的工作流规则
+- 你不想影响无关项目
+- 你希望团队成员通过仓库文件继承相同行为
+
+更适合使用全局安装的情况：
+
+- 你希望任何目录下都能看到 gstack
+- 你接受一套用户级的统一技能包
+- 你清楚这依然不是替换 Codex 本身
+
+### 5. 原版 gstack 与这份 fork 的区别
+
+原生 gstack 本身已经支持 Codex。这份 fork 不是从零发明 Codex 支持，而是把 `Windows + Codex` 这条路径做得更顺手、更稳定。
+
+| 维度 | 原版 gstack | 这份 fork |
+|---|---|---|
+| Codex 支持 | 已支持，`./setup --host codex` 即可 | 保留原版支持，并补强 Windows 接入体验 |
+| 核心技能 | 原版全部已有 | 核心技能基本不变 |
+| 安装方式 | 更通用，也更偏 Unix 风格 | 提供 `install-codex.ps1` 和 `bootstrap-codex-project.ps1` |
+| 项目接入 | 可以做，但更偏手工 | 自动维护 `AGENTS.md` 与 `.gstack/codex/` |
+| Windows 兼容 | 可用，但更容易踩坑 | 修复 Git Bash、Bun、Playwright 等 Windows 问题 |
+| 自检 | 基础 setup 路径 | 增加 `doctor-codex.ps1` |
+| 文档 | 偏通用英文说明 | 增加 Codex-first 中英文说明 |
 
 一句话总结：
 
 - 原版 gstack：已经兼容 Codex
 - 这份 fork：更像面向 Windows 和日常项目接入的 Codex-first 落地版
+
+### 6. 到底该选哪种安装方式
+
+最简单的判断规则：
+
+```text
+只想让一个仓库用 gstack -> 选项目级安装
+希望所有仓库都能看到 gstack -> 选全局安装
+想先稳妥试用 -> 先从项目级安装开始
+```
+
+对于 `Windows + Codex` 这条使用路径，建议顺序是：
+
+1. 先拿一个真实项目做项目级接入
+2. 确认这套流程符合你的习惯
+3. 如果后面你希望每个仓库都默认可用，再补全局安装

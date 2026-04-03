@@ -106,20 +106,35 @@ Set-Location $HOME\gstack
 The managed `AGENTS.md` block now routes Codex by workflow stage: planning goes to `gstack-office-hours` and the `gstack-plan-*` skills, browser QA goes to `gstack-browse` or `gstack-qa`, code review goes to `gstack-review`, shipping goes to `gstack-ship`, and risky operations go through `gstack-careful` or `gstack-guard`.
 The project-local playbook under `.gstack/codex/` gives Codex a stable repo-specific default for `review`, `qa`, `ship`, and `autoplan`.
 
-Mental model:
-- native Codex still does the execution
-- OpenAI models still do the reasoning
-- gstack adds the skill pack and workflow layer
+How to think about it:
 
-Scope:
-- project-local install affects only the target repo
-- global install exposes gstack skills to all Codex sessions for that user
-- neither mode replaces Codex itself
+```text
+OpenAI model brain + Codex runtime + gstack workflow pack
+```
 
-This fork vs upstream:
-- upstream gstack already supports Codex
-- this fork adds a Windows-first installer, project bootstrap, managed `AGENTS.md` routing, repo-local `.gstack/codex/` playbooks, `doctor-codex.ps1`, and Windows fixes for Bun/Git Bash/Playwright
-- the core gstack skills and browser workflow remain upstream gstack
+Codex still does the execution. gstack does not replace Codex; it adds skills, routing, and repo-local workflow defaults.
+
+Scope at a glance:
+
+| Mode | Writes to | Affects |
+|---|---|---|
+| Project-local | `.agents/skills/gstack`, `.gstack/codex/...`, `AGENTS.md` | one repo |
+| Global | `~/.codex/skills/gstack` | all Codex sessions for that user |
+
+Fork scope:
+
+| Dimension | Upstream gstack | This fork |
+|---|---|---|
+| Codex support | already supported | same support, plus Windows-first onboarding |
+| Core skills | upstream gstack skills | same core skills |
+| Installation | more generic | PowerShell installer and project bootstrap |
+| Project workflow | more manual | managed `AGENTS.md` plus `.gstack/codex/` playbooks |
+| Windows compatibility | workable | hardened for Git Bash, Bun, and Playwright |
+
+This means:
+- upstream gstack already works with Codex
+- this fork is optimized for repeated Windows + Codex rollout
+- the underlying gstack skill system is still upstream gstack
 
 For a fuller explanation, see [Codex Quickstart](docs/CODEX-QUICKSTART.md) and [中文快速开始](docs/CODEX-QUICKSTART.zh-CN.md).
 
