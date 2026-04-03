@@ -50,6 +50,23 @@ function Find-GitBash {
     return $fromPath
   }
 
+  $gitPath = Get-ToolPath 'git'
+  if ($gitPath) {
+    $gitDir = Split-Path -Parent $gitPath
+    $gitRoot = Split-Path -Parent $gitDir
+    $gitDerived = @(
+      (Join-Path $gitDir 'bash.exe'),
+      (Join-Path $gitRoot 'bin\bash.exe'),
+      (Join-Path $gitRoot 'usr\bin\bash.exe')
+    )
+
+    foreach ($candidate in ($gitDerived | Select-Object -Unique)) {
+      if ($candidate -and (Test-Path $candidate) -and -not (Test-IsWindowsSystemBash $candidate)) {
+        return $candidate
+      }
+    }
+  }
+
   $candidates = @(
     (Join-Path $env:ProgramFiles 'Git\bin\bash.exe'),
     (Join-Path $env:ProgramFiles 'Git\usr\bin\bash.exe'),
