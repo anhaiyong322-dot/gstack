@@ -106,6 +106,23 @@ Set-Location $HOME\gstack
 The managed `AGENTS.md` block now routes Codex by workflow stage: planning goes to `gstack-office-hours` and the `gstack-plan-*` skills, browser QA goes to `gstack-browse` or `gstack-qa`, code review goes to `gstack-review`, shipping goes to `gstack-ship`, and risky operations go through `gstack-careful` or `gstack-guard`.
 The project-local playbook under `.gstack/codex/` gives Codex a stable repo-specific default for `review`, `qa`, `ship`, and `autoplan`.
 
+Mental model:
+- native Codex still does the execution
+- OpenAI models still do the reasoning
+- gstack adds the skill pack and workflow layer
+
+Scope:
+- project-local install affects only the target repo
+- global install exposes gstack skills to all Codex sessions for that user
+- neither mode replaces Codex itself
+
+This fork vs upstream:
+- upstream gstack already supports Codex
+- this fork adds a Windows-first installer, project bootstrap, managed `AGENTS.md` routing, repo-local `.gstack/codex/` playbooks, `doctor-codex.ps1`, and Windows fixes for Bun/Git Bash/Playwright
+- the core gstack skills and browser workflow remain upstream gstack
+
+For a fuller explanation, see [Codex Quickstart](docs/CODEX-QUICKSTART.md) and [中文快速开始](docs/CODEX-QUICKSTART.zh-CN.md).
+
 Install to one repo:
 
 ```bash
@@ -274,6 +291,7 @@ I open sourced how I build software. You can fork it and make it your own.
 | Doc | What it covers |
 |-----|---------------|
 | [Codex Quickstart](docs/CODEX-QUICKSTART.md) | First-time project setup and the shortest path to using gstack with Codex |
+| [Codex Quickstart (中文)](docs/CODEX-QUICKSTART.zh-CN.md) | 中文版项目接入、安装范围、心智模型和 fork 差异说明 |
 | [Skill Deep Dives](docs/skills.md) | Philosophy, examples, and workflow for every skill (includes Greptile integration) |
 | [Builder Ethos](ETHOS.md) | Builder philosophy: Boil the Lake, Search Before Building, three layers of knowledge |
 | [Architecture](ARCHITECTURE.md) | Design decisions and system internals |

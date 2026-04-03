@@ -94,3 +94,50 @@ If the repo uses a vendored copy under `.agents\skills\gstack`, rerun:
 ```
 
 If skills are present but behavior looks stale, restart Codex in the project root.
+
+## Appendix
+
+### Mental Model
+
+When you run `codex`, the runtime is still native Codex. gstack does not replace the CLI or turn Codex into a different program.
+
+The practical stack is:
+
+- OpenAI model: the "brain" that reasons and writes
+- Codex CLI: the local agent runtime and execution environment
+- gstack: the skill pack and workflow layer on top
+
+If you also use ChatGPT as your main interface, it is best to think of ChatGPT as the entry point and Codex as the runtime.
+
+### Project-Local vs Global Install
+
+There are two distinct install modes:
+
+- project-local install: writes `.agents/skills/gstack`, `.gstack/codex/...`, and `AGENTS.md` into one repo
+- global install: writes the Codex runtime root under `~/.codex/skills/gstack`
+
+Project-local install is the safer default if you want gstack to affect only one repository. In that mode:
+
+- `codex` inside that repo sees gstack
+- `codex` in unrelated directories stays effectively native
+
+Global install makes gstack skills visible to all Codex sessions for that user account, but Codex is still the native runtime.
+
+### What This Fork Changes
+
+Upstream gstack already supports Codex. This fork does not invent Codex support from scratch; it hardens the workflow for a Windows-first Codex setup.
+
+The main additions in this fork are:
+
+- `install-codex.ps1` for Windows-friendly installation
+- `bootstrap-codex-project.ps1` for one-command project onboarding
+- managed `AGENTS.md` routing for Codex workflow stages
+- project-local playbooks under `.gstack/codex/`
+- `doctor-codex.ps1` for environment and install checks
+- Windows fixes for Bun, Git Bash, and Playwright bootstrap
+- bilingual quickstart docs
+
+In short:
+
+- upstream gstack: Codex-compatible
+- this fork: Codex-first and easier to deploy on Windows

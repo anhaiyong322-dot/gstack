@@ -94,3 +94,50 @@ Set-Location $HOME\gstack
 ```
 
 如果 skills 明明已经存在，但 Codex 的行为还是旧的，通常只需要在项目根目录重启一次 Codex。
+
+## 附录
+
+### 心智模型
+
+当你运行 `codex` 时，底层运行的仍然是原生 Codex。gstack 不会替换 Codex CLI，也不会把 Codex 变成另一套程序。
+
+更准确的理解方式是：
+
+- OpenAI 模型：负责思考、推理和生成动作，相当于“大脑”
+- Codex CLI：本地 agent 运行器和执行环境
+- gstack：叠加在上面的技能包和工作流层
+
+如果你平时通过 ChatGPT 来发起和协同工作，可以把 ChatGPT 理解成入口，把 Codex 理解成本地运行时。
+
+### 项目级安装与全局安装
+
+这套安装有两种模式：
+
+- 项目级安装：把 `.agents/skills/gstack`、`.gstack/codex/...` 和 `AGENTS.md` 写进某一个仓库
+- 全局安装：把 Codex 的运行时写到 `~/.codex/skills/gstack`
+
+如果你希望 gstack 只影响一个项目，默认应该优先选项目级安装。项目级安装下：
+
+- 在该项目里运行 `codex`，Codex 会看到 gstack
+- 在其他目录运行 `codex`，基本还是原生 Codex
+
+全局安装会让同一用户下的所有 Codex 会话都能发现 gstack skills，但底层运行器仍然是原生 Codex。
+
+### 这份 Fork 相比原版改了什么
+
+原生 gstack 本身已经支持 Codex。这份 fork 不是从零发明 Codex 支持，而是在 `Windows + Codex` 这条路径上做了更强的落地和加固。
+
+这份 fork 主要新增和强化的是：
+
+- `install-codex.ps1`，更适合 Windows 的安装入口
+- `bootstrap-codex-project.ps1`，一条命令把项目接入 Codex 工作流
+- 自动维护 `AGENTS.md`，让 Codex 按工作流阶段路由
+- 生成 `.gstack/codex/` 下的项目级 playbook 和 prompts
+- `doctor-codex.ps1`，用于环境和安装自检
+- 针对 Bun、Git Bash、Playwright 的 Windows 兼容修复
+- 中英文快速开始文档
+
+一句话总结：
+
+- 原版 gstack：已经兼容 Codex
+- 这份 fork：更像面向 Windows 和日常项目接入的 Codex-first 落地版
