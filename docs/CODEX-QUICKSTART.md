@@ -1,5 +1,9 @@
 # Codex Quickstart
 
+Updated: 2026-04-03
+
+[中文版本](CODEX-QUICKSTART.zh-CN.md)
+
 This guide is the shortest path to using gstack inside a real project with Codex.
 
 ## Prerequisites
