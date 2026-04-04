@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "name": "codex-windows-overlay",
+  "description": "Codex-first Windows and project-bootstrap overlay for gstack.",
+  "ownedDirectories": [
+    {
+      "source": "overlay",
+      "target": "overlay"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "target": "bootstrap-codex-project.ps1",
+      "source": "overlay/files/bootstrap-codex-project.ps1"
+    },
+    {
+      "target": "install-codex.ps1",
+      "source": "overlay/files/install-codex.ps1"
+    },
+    {
+      "target": "scripts/doctor-codex.ps1",
+      "source": "overlay/files/scripts/doctor-codex.ps1"
+    },
+    {
+      "target": "scripts/scaffold-codex-project.ps1",
+      "source": "overlay/files/scripts/scaffold-codex-project.ps1"
+    },
+    {
+      "target": "scripts/sync-agents-md.ps1",
+      "source": "overlay/files/scripts/sync-agents-md.ps1"
+    },
+    {
+      "target": "scripts/apply-codex-overlay.ps1",
+      "source": "overlay/files/scripts/apply-codex-overlay.ps1"
+    },
+    {
+      "target": "scripts/check-upstream-overlay.ps1",
+      "source": "overlay/files/scripts/check-upstream-overlay.ps1"
+    },
+    {
+      "target": "scripts/export-codex-overlay.ps1",
+      "source": "overlay/files/scripts/export-codex-overlay.ps1"
+    },
+    {
+      "target": "scripts/sync-upstream-overlay.ps1",
+      "source": "overlay/files/scripts/sync-upstream-overlay.ps1"
+    },
+    {
+      "target": "docs/CODEX-QUICKSTART.md",
+      "source": "overlay/files/docs/CODEX-QUICKSTART.md"
+    },
+    {
+      "target": "docs/CODEX-QUICKSTART.zh-CN.md",
+      "source": "overlay/files/docs/CODEX-QUICKSTART.zh-CN.md"
+    },
+    {
+      "target": "docs/UPSTREAM-SYNC.md",
+      "source": "overlay/files/docs/UPSTREAM-SYNC.md"
+    },
+    {
+      "target": ".github/workflows/upstream-overlay-watch.yml",
+      "source": "overlay/files/.github/workflows/upstream-overlay-watch.yml"
+    }
+  ],
+  "patches": [
+    {
+      "target": "README.md",
+      "path": "overlay/patches/README.codex.patch"
+    },
+    {
+      "target": "setup",
+      "path": "overlay/patches/setup.windows-codex.patch"
+    }
+  ]
+}

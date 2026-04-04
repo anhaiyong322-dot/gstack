@@ -1,0 +1,7 @@
+{
+  "repo": "https://github.com/garrytan/gstack.git",
+  "branch": "main",
+  "lastReviewedSha": "cf73db5f19040218ecd50d0b81acffd40b63f056",
+  "lastReviewedDate": "2026-04-04",
+  "notes": "Use scripts/sync-upstream-overlay.ps1 to create a trial worktree on top of the latest upstream main and re-apply this overlay."
+}

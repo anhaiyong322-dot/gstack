@@ -1,0 +1,88 @@
+name: upstream-overlay-watch
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * *'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check upstream status
+        id: check
+        shell: pwsh
+        run: |
+          $json = ./scripts/check-upstream-overlay.ps1 -RepoRoot $PWD -Json -AllowBehind
+          $status = $json | ConvertFrom-Json
+          $json | Out-File -FilePath upstream-status.json -Encoding utf8
+          "state=$($status.state)" >> $env:GITHUB_OUTPUT
+          "latest_sha=$($status.latestSha)" >> $env:GITHUB_OUTPUT
+          "reviewed_sha=$($status.reviewedSha)" >> $env:GITHUB_OUTPUT
+
+      - name: Write summary
+        shell: pwsh
+        run: |
+          $status = Get-Content -Raw upstream-status.json | ConvertFrom-Json
+          @"
+          ## Upstream Overlay Watch
+
+          - State: $($status.state)
+          - Reviewed SHA: $($status.reviewedSha)
+          - Latest SHA: $($status.latestSha)
+          "@ >> $env:GITHUB_STEP_SUMMARY
+
+      - name: Create or update sync issue
+        if: steps.check.outputs.state == 'behind'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const status = JSON.parse(fs.readFileSync('upstream-status.json', 'utf8'));
+            const title = 'Upstream gstack sync available';
+            const body = [
+              'Upstream `garrytan/gstack` has moved ahead of the reviewed overlay baseline.',
+              '',
+              `- Reviewed SHA: \`${status.reviewedSha}\``,
+              `- Latest SHA: \`${status.latestSha}\``,
+              '',
+              'Suggested next step:',
+              '',
+              '```powershell',
+              '.\\scripts\\sync-upstream-overlay.ps1',
+              '```',
+              '',
+              'After validation, run `scripts/export-codex-overlay.ps1 -UpdateReviewedSha` from the trial worktree and merge the result.'
+            ].join('\n');
+
+            const { owner, repo } = context.repo;
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100
+            });
+
+            const existing = issues.find(issue => issue.title === title);
+            if (existing) {
+              await github.rest.issues.update({
+                owner,
+                repo,
+                issue_number: existing.number,
+                body
+              });
+            } else {
+              await github.rest.issues.create({
+                owner,
+                repo,
+                title,
+                body
+              });
+            }

@@ -324,6 +324,7 @@ I open sourced how I build software. You can fork it and make it your own.
 |-----|---------------|
 | [Codex Quickstart](docs/CODEX-QUICKSTART.md) | First-time project setup and the shortest path to using gstack with Codex |
 | [Codex Quickstart (中文)](docs/CODEX-QUICKSTART.zh-CN.md) | 中文版项目接入、安装范围、心智模型和 fork 差异说明 |
+| [Upstream Sync Guide](docs/UPSTREAM-SYNC.md) | How this fork tracks upstream gstack while preserving the Codex and Windows overlay |
 | [Skill Deep Dives](docs/skills.md) | Philosophy, examples, and workflow for every skill (includes Greptile integration) |
 | [Builder Ethos](ETHOS.md) | Builder philosophy: Boil the Lake, Search Before Building, three layers of knowledge |
 | [Architecture](ARCHITECTURE.md) | Design decisions and system internals |
