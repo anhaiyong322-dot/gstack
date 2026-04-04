@@ -1,11 +1,69 @@
 diff --git a/README.md b/README.md
-index 80a5cae..1fce5c2 100644
+index 80a5cae..649c241 100644
 --- a/README.md
 +++ b/README.md
-@@ -1,316 +1,379 @@
+@@ -1,316 +1,330 @@
 -# gstack
 -
 -> "I don't think I've typed like a line of code probably since December, basically, which is an extremely large change." — [Andrej Karpathy](https://fortune.com/2026/03/21/andrej-karpathy-openai-cofounder-ai-agents-coding-state-of-psychosis-openclaw/), No Priors podcast, March 2026
+-
+-When I heard Karpathy say this, I wanted to find out how. How does one person ship like a team of twenty? Peter Steinberger built [OpenClaw](https://github.com/openclaw/openclaw) — 247K GitHub stars — essentially solo with AI agents. The revolution is here. A single builder with the right tooling can move faster than a traditional team.
+-
+-I'm [Garry Tan](https://x.com/garrytan), President & CEO of [Y Combinator](https://www.ycombinator.com/). I've worked with thousands of startups — Coinbase, Instacart, Rippling — when they were one or two people in a garage. Before YC, I was one of the first eng/PM/designers at Palantir, cofounded Posterous (sold to Twitter), and built Bookface, YC's internal social network.
+-
+-**gstack is my answer.** I've been building products for twenty years, and right now I'm shipping more code than I ever have. In the last 60 days: **600,000+ lines of production code** (35% tests), **10,000-20,000 lines per day**, part-time, while running YC full-time. Here's my last `/retro` across 3 projects: **140,751 lines added, 362 commits, ~115k net LOC** in one week.
+-
+-**2026 — 1,237 contributions and counting:**
+-
+-![GitHub contributions 2026 — 1,237 contributions, massive acceleration in Jan-Mar](docs/images/github-2026.png)
+-
+-**2013 — when I built Bookface at YC (772 contributions):**
+-
+-![GitHub contributions 2013 — 772 contributions building Bookface at YC](docs/images/github-2013.png)
+-
+-Same person. Different era. The difference is the tooling.
+-
+-**gstack is how I do it.** It turns Claude Code into a virtual engineering team — a CEO who rethinks the product, an eng manager who locks architecture, a designer who catches AI slop, a reviewer who finds production bugs, a QA lead who opens a real browser, a security officer who runs OWASP + STRIDE audits, and a release engineer who ships the PR. Twenty-three specialists and eight power tools, all slash commands, all Markdown, all free, MIT license.
+-
+-This is my open source software factory. I use it every day. I'm sharing it because these tools should be available to everyone.
+-
+-Fork it. Improve it. Make it yours. And if you want to hate on free open source software — you're welcome to, but I'd rather you just try it first.
+-
+-**Who this is for:**
+-- **Founders and CEOs** — especially technical ones who still want to ship
+-- **First-time Claude Code users** — structured roles instead of a blank prompt
+-- **Tech leads and staff engineers** — rigorous review, QA, and release automation on every PR
+-
+-## Quick start
+-
+-1. Install gstack (30 seconds — see below)
+-2. Run `/office-hours` — describe what you're building
+-3. Run `/plan-ceo-review` on any feature idea
+-4. Run `/review` on any branch with changes
+-5. Run `/qa` on your staging URL
+-6. Stop there. You'll know if this is for you.
+-
+-## Install — 30 seconds
+-
+-**Requirements:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Git](https://git-scm.com/), [Bun](https://bun.sh/) v1.0+, [Node.js](https://nodejs.org/) (Windows only)
+-
+-### Step 1: Install on your machine
+-
+-Open Claude Code and paste this. Claude does the rest.
+-
+-> Install gstack: run **`git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack && cd ~/.claude/skills/gstack && ./setup`** then add a "gstack" section to CLAUDE.md that says to use the /browse skill from gstack for all web browsing, never use mcp\_\_claude-in-chrome\_\_\* tools, and lists the available skills: /office-hours, /plan-ceo-review, /plan-eng-review, /plan-design-review, /design-consultation, /design-shotgun, /design-html, /review, /ship, /land-and-deploy, /canary, /benchmark, /browse, /connect-chrome, /qa, /qa-only, /design-review, /setup-browser-cookies, /setup-deploy, /retro, /investigate, /document-release, /codex, /cso, /autoplan, /plan-devex-review, /devex-review, /careful, /freeze, /guard, /unfreeze, /gstack-upgrade, /learn. Then ask the user if they also want to add gstack to the current project so teammates get it.
+-
+-### Step 2: Add to your repo so teammates get it (optional)
+-
+-> Add gstack to this project: run **`cp -Rf ~/.claude/skills/gstack .claude/skills/gstack && rm -rf .claude/skills/gstack/.git && cd .claude/skills/gstack && ./setup`** then add a "gstack" section to this project's CLAUDE.md that says to use the /browse skill from gstack for all web browsing, never use mcp\_\_claude-in-chrome\_\_\* tools, lists the available skills: /office-hours, /plan-ceo-review, /plan-eng-review, /plan-design-review, /design-consultation, /design-shotgun, /design-html, /review, /ship, /land-and-deploy, /canary, /benchmark, /browse, /connect-chrome, /qa, /qa-only, /design-review, /setup-browser-cookies, /setup-deploy, /retro, /investigate, /document-release, /codex, /cso, /autoplan, /plan-devex-review, /devex-review, /careful, /freeze, /guard, /unfreeze, /gstack-upgrade, /learn, and tells Claude that if gstack skills aren't working, run `cd .claude/skills/gstack && ./setup` to build the binary and register skills.
+-
+-Real files get committed to your repo (not a submodule), so `git clone` just works. Everything lives inside `.claude/`. Nothing touches your PATH or runs in the background.
+-
+-> **Contributing or need full history?** The commands above use `--depth 1` for a fast install. If you plan to contribute or need full git history, do a full clone instead:
+-> ```bash
+-> git clone https://github.com/garrytan/gstack.git ~/.claude/skills/gstack
+-> ```
+-
 +# gstack
 +
 +> "I don't think I've typed like a line of code probably since December, basically, which is an extremely large change." — [Andrej Karpathy](https://fortune.com/2026/03/21/andrej-karpathy-openai-cofounder-ai-agents-coding-state-of-psychosis-openclaw/), No Priors podcast, March 2026
@@ -67,187 +125,69 @@ index 80a5cae..1fce5c2 100644
 +> git clone https://github.com/garrytan/gstack.git ~/.claude/skills/gstack
 +> ```
 +
-+### Codex, Gemini CLI, or Cursor
+ ### Codex, Gemini CLI, or Cursor
  
--When I heard Karpathy say this, I wanted to find out how. How does one person ship like a team of twenty? Peter Steinberger built [OpenClaw](https://github.com/openclaw/openclaw) — 247K GitHub stars — essentially solo with AI agents. The revolution is here. A single builder with the right tooling can move faster than a traditional team.
-+gstack works on any agent that supports the [SKILL.md standard](https://github.com/anthropics/claude-code). Skills live in `.agents/skills/` and are discovered automatically.
+ gstack works on any agent that supports the [SKILL.md standard](https://github.com/anthropics/claude-code). Skills live in `.agents/skills/` and are discovered automatically.
  
--I'm [Garry Tan](https://x.com/garrytan), President & CEO of [Y Combinator](https://www.ycombinator.com/). I've worked with thousands of startups — Coinbase, Instacart, Rippling — when they were one or two people in a garage. Before YC, I was one of the first eng/PM/designers at Palantir, cofounded Posterous (sold to Twitter), and built Bookface, YC's internal social network.
-+Windows PowerShell install from this fork:
+-Install to one repo:
++Recommended Windows path: bootstrap one real repo first.
  
--**gstack is my answer.** I've been building products for twenty years, and right now I'm shipping more code than I ever have. In the last 60 days: **600,000+ lines of production code** (35% tests), **10,000-20,000 lines per day**, part-time, while running YC full-time. Here's my last `/retro` across 3 projects: **140,751 lines added, 362 commits, ~115k net LOC** in one week.
-+```powershell
-+git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git $HOME\gstack
-+Set-Location $HOME\gstack
-+.\install-codex.ps1
-+```
- 
--**2026 — 1,237 contributions and counting:**
-+Project-local install into your current repo:
- 
--![GitHub contributions 2026 — 1,237 contributions, massive acceleration in Jan-Mar](docs/images/github-2026.png)
-+```powershell
-+git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git $HOME\gstack
-+Set-Location $HOME\gstack
-+.\install-codex.ps1 -RepoLocal -ProjectRoot E:\your-project
-+```
- 
--**2013 — when I built Bookface at YC (772 contributions):**
-+`install-codex.ps1` finds Git Bash automatically, checks `bun` and `node`, runs `./setup --host codex`, updates the target repo's `AGENTS.md` with a managed gstack section, and then runs `scripts/doctor-codex.ps1` so you can see whether the generated skills, runtime root, and project instructions are healthy.
- 
--![GitHub contributions 2013 — 772 contributions building Bookface at YC](docs/images/github-2013.png)
-+When a project root is provided, the installer also scaffolds a managed Codex playbook under `.gstack/codex/`:
-+- `.gstack/codex/GSTACK-CODEX.md` for workflow routing
-+- `.gstack/codex/prompts/review.md`
-+- `.gstack/codex/prompts/qa.md`
-+- `.gstack/codex/prompts/ship.md`
-+- `.gstack/codex/prompts/autoplan.md`
- 
--Same person. Different era. The difference is the tooling.
-+One-command project bootstrap:
- 
--**gstack is how I do it.** It turns Claude Code into a virtual engineering team — a CEO who rethinks the product, an eng manager who locks architecture, a designer who catches AI slop, a reviewer who finds production bugs, a QA lead who opens a real browser, a security officer who runs OWASP + STRIDE audits, and a release engineer who ships the PR. Twenty-three specialists and eight power tools, all slash commands, all Markdown, all free, MIT license.
+-```bash
+-git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git .agents/skills/gstack
+-cd .agents/skills/gstack && ./setup --host codex
 +```powershell
 +git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git $HOME\gstack
 +Set-Location $HOME\gstack
 +.\bootstrap-codex-project.ps1 -ProjectRoot E:\your-project
-+```
- 
--This is my open source software factory. I use it every day. I'm sharing it because these tools should be available to everyone.
-+If you installed gstack globally and want to wire it into a specific project later, point the installer at that repo:
- 
--Fork it. Improve it. Make it yours. And if you want to hate on free open source software — you're welcome to, but I'd rather you just try it first.
-+```powershell
-+Set-Location $HOME\gstack
-+.\install-codex.ps1 -AgentsProjectRoot E:\your-project
-+```
- 
--**Who this is for:**
--- **Founders and CEOs** — especially technical ones who still want to ship
--- **First-time Claude Code users** — structured roles instead of a blank prompt
--- **Tech leads and staff engineers** — rigorous review, QA, and release automation on every PR
-+The managed `AGENTS.md` block now routes Codex by workflow stage: planning goes to `gstack-office-hours` and the `gstack-plan-*` skills, browser QA goes to `gstack-browse` or `gstack-qa`, code review goes to `gstack-review`, shipping goes to `gstack-ship`, and risky operations go through `gstack-careful` or `gstack-guard`.
-+The project-local playbook under `.gstack/codex/` gives Codex a stable repo-specific default for `review`, `qa`, `ship`, and `autoplan`.
- 
--## Quick start
-+How to think about it:
- 
--1. Install gstack (30 seconds — see below)
--2. Run `/office-hours` — describe what you're building
--3. Run `/plan-ceo-review` on any feature idea
--4. Run `/review` on any branch with changes
--5. Run `/qa` on your staging URL
--6. Stop there. You'll know if this is for you.
-+```text
-+OpenAI model brain + Codex runtime + gstack workflow pack
-+```
- 
--## Install — 30 seconds
-+Codex still does the execution. gstack does not replace Codex; it adds skills, routing, and repo-local workflow defaults.
- 
--**Requirements:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Git](https://git-scm.com/), [Bun](https://bun.sh/) v1.0+, [Node.js](https://nodejs.org/) (Windows only)
-+Scope at a glance:
- 
--### Step 1: Install on your machine
-+| Mode | Writes to | Affects |
-+|---|---|---|
-+| Project-local | `.agents/skills/gstack`, `.gstack/codex/...`, `AGENTS.md` | one repo |
-+| Global | `~/.codex/skills/gstack` | all Codex sessions for that user |
- 
--Open Claude Code and paste this. Claude does the rest.
-+Fork scope:
- 
--> Install gstack: run **`git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack && cd ~/.claude/skills/gstack && ./setup`** then add a "gstack" section to CLAUDE.md that says to use the /browse skill from gstack for all web browsing, never use mcp\_\_claude-in-chrome\_\_\* tools, and lists the available skills: /office-hours, /plan-ceo-review, /plan-eng-review, /plan-design-review, /design-consultation, /design-shotgun, /design-html, /review, /ship, /land-and-deploy, /canary, /benchmark, /browse, /connect-chrome, /qa, /qa-only, /design-review, /setup-browser-cookies, /setup-deploy, /retro, /investigate, /document-release, /codex, /cso, /autoplan, /plan-devex-review, /devex-review, /careful, /freeze, /guard, /unfreeze, /gstack-upgrade, /learn. Then ask the user if they also want to add gstack to the current project so teammates get it.
-+| Dimension | Upstream gstack | This fork |
-+|---|---|---|
-+| Codex support | already supported | same support, plus Windows-first onboarding |
-+| Core skills | upstream gstack skills | same core skills |
-+| Installation | more generic | PowerShell installer and project bootstrap |
-+| Project workflow | more manual | managed `AGENTS.md` plus `.gstack/codex/` playbooks |
-+| Windows compatibility | workable | hardened for Git Bash, Bun, and Playwright |
- 
--### Step 2: Add to your repo so teammates get it (optional)
-+This means:
-+- upstream gstack already works with Codex
-+- this fork is optimized for repeated Windows + Codex rollout
-+- the underlying gstack skill system is still upstream gstack
- 
--> Add gstack to this project: run **`cp -Rf ~/.claude/skills/gstack .claude/skills/gstack && rm -rf .claude/skills/gstack/.git && cd .claude/skills/gstack && ./setup`** then add a "gstack" section to this project's CLAUDE.md that says to use the /browse skill from gstack for all web browsing, never use mcp\_\_claude-in-chrome\_\_\* tools, lists the available skills: /office-hours, /plan-ceo-review, /plan-eng-review, /plan-design-review, /design-consultation, /design-shotgun, /design-html, /review, /ship, /land-and-deploy, /canary, /benchmark, /browse, /connect-chrome, /qa, /qa-only, /design-review, /setup-browser-cookies, /setup-deploy, /retro, /investigate, /document-release, /codex, /cso, /autoplan, /plan-devex-review, /devex-review, /careful, /freeze, /guard, /unfreeze, /gstack-upgrade, /learn, and tells Claude that if gstack skills aren't working, run `cd .claude/skills/gstack && ./setup` to build the binary and register skills.
-+By default, the Codex route in this fork uses namespaced commands such as `gstack-review`, `gstack-qa`, and `gstack-ship`.
-+The most common workflow is:
- 
--Real files get committed to your repo (not a submodule), so `git clone` just works. Everything lives inside `.claude/`. Nothing touches your PATH or runs in the background.
-+1. `gstack-office-hours`
-+2. `gstack-autoplan`
-+3. implementation
-+4. `gstack-review`
-+5. `gstack-qa`
-+6. `gstack-ship`
- 
--> **Contributing or need full history?** The commands above use `--depth 1` for a fast install. If you plan to contribute or need full git history, do a full clone instead:
--> ```bash
--> git clone https://github.com/garrytan/gstack.git ~/.claude/skills/gstack
--> ```
-+First real commands inside a repo usually look like:
-+- `Use gstack-review and review the current branch.`
-+- `Use gstack-autoplan and create the implementation plan first.`
-+- `Use gstack-qa and test https://staging.example.com.`
- 
--### Codex, Gemini CLI, or Cursor
-+The quickstart docs also include a full `review -> qa -> ship` example session.
- 
--gstack works on any agent that supports the [SKILL.md standard](https://github.com/anthropics/claude-code). Skills live in `.agents/skills/` and are discovered automatically.
-+For the complete command catalog, grouped use cases, example sessions, and a fuller explanation, see [Codex Quickstart](docs/CODEX-QUICKSTART.md) and [中文快速开始](docs/CODEX-QUICKSTART.zh-CN.md).
- 
- Install to one repo:
- 
- ```bash
--git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git .agents/skills/gstack
-+git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git .agents/skills/gstack
- cd .agents/skills/gstack && ./setup --host codex
  ```
--
+ 
 -When setup runs from `.agents/skills/gstack`, it installs the generated Codex skills next to it in the same repo and does not write to `~/.codex/skills`.
 -
-+
-+When setup runs from `.agents/skills/gstack`, it installs the generated Codex skills next to it in the same repo and does not write to `~/.codex/skills`.
-+
- Install once for your user account:
+-Install once for your user account:
++That project-local bootstrap:
  
- ```bash
+-```bash
 -git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/gstack
-+git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git ~/gstack
- cd ~/gstack && ./setup --host codex
- ```
+-cd ~/gstack && ./setup --host codex
+-```
 -
 -`setup --host codex` creates the runtime root at `~/.codex/skills/gstack` and
 -links the generated Codex skills at the top level. This avoids duplicate skill
 -discovery from the source repo checkout.
--
-+
-+`setup --host codex` creates the runtime root at `~/.codex/skills/gstack` and
-+links the generated Codex skills at the top level. This avoids duplicate skill
-+discovery from the source repo checkout.
-+
- Or let setup auto-detect which agents you have installed:
++- runs `./setup --host codex`
++- installs the skills under `E:\your-project\.agents\skills\gstack`
++- writes or updates `E:\your-project\AGENTS.md`
++- scaffolds `.gstack/codex/GSTACK-CODEX.md`
++- scaffolds `.gstack/codex/prompts/review.md`, `qa.md`, `ship.md`, and `autoplan.md`
++- runs `scripts/doctor-codex.ps1`
  
- ```bash
+-Or let setup auto-detect which agents you have installed:
++After bootstrap:
+ 
+-```bash
 -git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/gstack
-+git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git ~/gstack
- cd ~/gstack && ./setup --host auto
+-cd ~/gstack && ./setup --host auto
++```powershell
++Set-Location E:\your-project
++codex
  ```
--
+ 
 -For Codex-compatible hosts, setup now supports both repo-local installs from `.agents/skills/gstack` and user-global installs from `~/.codex/skills/gstack`. All 31 skills work across all supported agents. Hook-based safety skills (careful, freeze, guard) use inline safety advisory prose on non-Claude hosts.
 -
 -### Factory Droid
--
++If you want a global install instead:
+ 
 -gstack works with [Factory Droid](https://factory.ai). Skills install to `.factory/skills/` and are discovered automatically. Sensitive skills (ship, land-and-deploy, guard) use `disable-model-invocation: true` so Droids don't auto-invoke them.
 -
 -```bash
 -git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/gstack
 -cd ~/gstack && ./setup --host factory
--```
--
++```powershell
++git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git $HOME\gstack
++Set-Location $HOME\gstack
++.\install-codex.ps1
+ ```
+ 
 -Skills install to `~/.factory/skills/gstack-*/`. Restart `droid` to rescan skills, then type `/qa` to get started.
 -
 -### Voice input (AquaVoice, Whisper, etc.)
@@ -257,8 +197,12 @@ index 80a5cae..1fce5c2 100644
 -right skill activates. You don't need to remember slash command names or acronyms.
 -
 -## See it work
--
--```
++If you already installed globally and later want one repo to get the managed `AGENTS.md` and `.gstack/codex/` files too:
+ 
++```powershell
++Set-Location $HOME\gstack
++.\install-codex.ps1 -AgentsProjectRoot E:\your-project
+ ```
 -You:    I want to build a daily briefing app for my calendar.
 -You:    /office-hours
 -Claude: [asks about the pain — specific examples, not hypotheticals]
@@ -276,10 +220,11 @@ index 80a5cae..1fce5c2 100644
 -        real usage. The full vision is a 3-month project — start with
 -        the daily briefing that actually works.
 -        [writes design doc → feeds into downstream skills automatically]
--
+ 
 -You:    /plan-ceo-review
 -        [reads the design doc, challenges scope, runs 10-section review]
--
++How to think about it:
+ 
 -You:    /plan-eng-review
 -        [ASCII diagrams for data flow, state machines, error paths]
 -        [test matrix, failure modes, security concerns]
@@ -295,8 +240,10 @@ index 80a5cae..1fce5c2 100644
 -
 -You:    /ship
 -        Tests: 42 → 51 (+9 new). PR: github.com/you/app/pull/42
--```
--
++```text
++OpenAI model brain + Codex runtime + gstack workflow pack
+ ```
+ 
 -You said "daily briefing app." The agent said "you're building a chief of staff AI" — because it listened to your pain, not your feature request. Eight commands, end to end. That is not a copilot. That is a team.
 -
 -## The sprint
@@ -407,8 +354,32 @@ index 80a5cae..1fce5c2 100644
 -
 -## Docs
 -
++Codex still does the execution. gstack does not replace Codex; it adds skills, browser workflows, safety rails, and repo-local defaults.
 +
-+For Codex-compatible hosts, setup now supports both repo-local installs from `.agents/skills/gstack` and user-global installs from `~/.codex/skills/gstack`. All 28 skills work across all supported agents. Hook-based safety skills (careful, freeze, guard) use inline safety advisory prose on non-Claude hosts.
++Scope at a glance:
++
++| Mode | Writes to | Affects |
++|---|---|---|
++| Project-local | `.agents/skills/gstack`, `.gstack/codex/...`, `AGENTS.md` | one repo |
++| Global | `~/.codex/skills/gstack` | all Codex sessions for that user |
++
++Recommended first commands inside a repo:
++
++- `Use gstack-review and review the current branch.`
++- `Use gstack-autoplan and create the implementation plan first.`
++- `Use gstack-qa and test https://staging.example.com.`
++- `Use gstack-ship and prepare this branch to ship.`
++
++Recommended workflow order:
++
++1. `gstack-office-hours`
++2. `gstack-autoplan`
++3. implementation
++4. `gstack-review`
++5. `gstack-qa`
++6. `gstack-ship`
++
++For the complete install guide, grouped command catalog, troubleshooting steps, and example sessions, see [Codex Quickstart](docs/CODEX-QUICKSTART.md), [中文快速开始](docs/CODEX-QUICKSTART.zh-CN.md), and [Upstream Sync Guide](docs/UPSTREAM-SYNC.md).
 +
 +## See it work
 +

@@ -63,32 +63,7 @@ Real files get committed to your repo (not a submodule), so `git clone` just wor
 
 gstack works on any agent that supports the [SKILL.md standard](https://github.com/anthropics/claude-code). Skills live in `.agents/skills/` and are discovered automatically.
 
-Windows PowerShell install from this fork:
-
-```powershell
-git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git $HOME\gstack
-Set-Location $HOME\gstack
-.\install-codex.ps1
-```
-
-Project-local install into your current repo:
-
-```powershell
-git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git $HOME\gstack
-Set-Location $HOME\gstack
-.\install-codex.ps1 -RepoLocal -ProjectRoot E:\your-project
-```
-
-`install-codex.ps1` finds Git Bash automatically, checks `bun` and `node`, runs `./setup --host codex`, updates the target repo's `AGENTS.md` with a managed gstack section, and then runs `scripts/doctor-codex.ps1` so you can see whether the generated skills, runtime root, and project instructions are healthy.
-
-When a project root is provided, the installer also scaffolds a managed Codex playbook under `.gstack/codex/`:
-- `.gstack/codex/GSTACK-CODEX.md` for workflow routing
-- `.gstack/codex/prompts/review.md`
-- `.gstack/codex/prompts/qa.md`
-- `.gstack/codex/prompts/ship.md`
-- `.gstack/codex/prompts/autoplan.md`
-
-One-command project bootstrap:
+Recommended Windows path: bootstrap one real repo first.
 
 ```powershell
 git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git $HOME\gstack
@@ -96,15 +71,36 @@ Set-Location $HOME\gstack
 .\bootstrap-codex-project.ps1 -ProjectRoot E:\your-project
 ```
 
-If you installed gstack globally and want to wire it into a specific project later, point the installer at that repo:
+That project-local bootstrap:
+
+- runs `./setup --host codex`
+- installs the skills under `E:\your-project\.agents\skills\gstack`
+- writes or updates `E:\your-project\AGENTS.md`
+- scaffolds `.gstack/codex/GSTACK-CODEX.md`
+- scaffolds `.gstack/codex/prompts/review.md`, `qa.md`, `ship.md`, and `autoplan.md`
+- runs `scripts/doctor-codex.ps1`
+
+After bootstrap:
+
+```powershell
+Set-Location E:\your-project
+codex
+```
+
+If you want a global install instead:
+
+```powershell
+git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git $HOME\gstack
+Set-Location $HOME\gstack
+.\install-codex.ps1
+```
+
+If you already installed globally and later want one repo to get the managed `AGENTS.md` and `.gstack/codex/` files too:
 
 ```powershell
 Set-Location $HOME\gstack
 .\install-codex.ps1 -AgentsProjectRoot E:\your-project
 ```
-
-The managed `AGENTS.md` block now routes Codex by workflow stage: planning goes to `gstack-office-hours` and the `gstack-plan-*` skills, browser QA goes to `gstack-browse` or `gstack-qa`, code review goes to `gstack-review`, shipping goes to `gstack-ship`, and risky operations go through `gstack-careful` or `gstack-guard`.
-The project-local playbook under `.gstack/codex/` gives Codex a stable repo-specific default for `review`, `qa`, `ship`, and `autoplan`.
 
 How to think about it:
 
@@ -112,7 +108,7 @@ How to think about it:
 OpenAI model brain + Codex runtime + gstack workflow pack
 ```
 
-Codex still does the execution. gstack does not replace Codex; it adds skills, routing, and repo-local workflow defaults.
+Codex still does the execution. gstack does not replace Codex; it adds skills, browser workflows, safety rails, and repo-local defaults.
 
 Scope at a glance:
 
@@ -121,23 +117,14 @@ Scope at a glance:
 | Project-local | `.agents/skills/gstack`, `.gstack/codex/...`, `AGENTS.md` | one repo |
 | Global | `~/.codex/skills/gstack` | all Codex sessions for that user |
 
-Fork scope:
+Recommended first commands inside a repo:
 
-| Dimension | Upstream gstack | This fork |
-|---|---|---|
-| Codex support | already supported | same support, plus Windows-first onboarding |
-| Core skills | upstream gstack skills | same core skills |
-| Installation | more generic | PowerShell installer and project bootstrap |
-| Project workflow | more manual | managed `AGENTS.md` plus `.gstack/codex/` playbooks |
-| Windows compatibility | workable | hardened for Git Bash, Bun, and Playwright |
+- `Use gstack-review and review the current branch.`
+- `Use gstack-autoplan and create the implementation plan first.`
+- `Use gstack-qa and test https://staging.example.com.`
+- `Use gstack-ship and prepare this branch to ship.`
 
-This means:
-- upstream gstack already works with Codex
-- this fork is optimized for repeated Windows + Codex rollout
-- the underlying gstack skill system is still upstream gstack
-
-By default, the Codex route in this fork uses namespaced commands such as `gstack-review`, `gstack-qa`, and `gstack-ship`.
-The most common workflow is:
+Recommended workflow order:
 
 1. `gstack-office-hours`
 2. `gstack-autoplan`
@@ -146,43 +133,7 @@ The most common workflow is:
 5. `gstack-qa`
 6. `gstack-ship`
 
-First real commands inside a repo usually look like:
-- `Use gstack-review and review the current branch.`
-- `Use gstack-autoplan and create the implementation plan first.`
-- `Use gstack-qa and test https://staging.example.com.`
-
-The quickstart docs also include a full `review -> qa -> ship` example session.
-
-For the complete command catalog, grouped use cases, example sessions, and a fuller explanation, see [Codex Quickstart](docs/CODEX-QUICKSTART.md) and [中文快速开始](docs/CODEX-QUICKSTART.zh-CN.md).
-
-Install to one repo:
-
-```bash
-git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git .agents/skills/gstack
-cd .agents/skills/gstack && ./setup --host codex
-```
-
-When setup runs from `.agents/skills/gstack`, it installs the generated Codex skills next to it in the same repo and does not write to `~/.codex/skills`.
-
-Install once for your user account:
-
-```bash
-git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git ~/gstack
-cd ~/gstack && ./setup --host codex
-```
-
-`setup --host codex` creates the runtime root at `~/.codex/skills/gstack` and
-links the generated Codex skills at the top level. This avoids duplicate skill
-discovery from the source repo checkout.
-
-Or let setup auto-detect which agents you have installed:
-
-```bash
-git clone --single-branch --depth 1 https://github.com/anhaiyong322-dot/gstack.git ~/gstack
-cd ~/gstack && ./setup --host auto
-```
-
-For Codex-compatible hosts, setup now supports both repo-local installs from `.agents/skills/gstack` and user-global installs from `~/.codex/skills/gstack`. All 28 skills work across all supported agents. Hook-based safety skills (careful, freeze, guard) use inline safety advisory prose on non-Claude hosts.
+For the complete install guide, grouped command catalog, troubleshooting steps, and example sessions, see [Codex Quickstart](docs/CODEX-QUICKSTART.md), [中文快速开始](docs/CODEX-QUICKSTART.zh-CN.md), and [Upstream Sync Guide](docs/UPSTREAM-SYNC.md).
 
 ## See it work
 
